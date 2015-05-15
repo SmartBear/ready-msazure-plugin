@@ -25,6 +25,10 @@ public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
     @Override
     public void perform(WsdlProject project, Object o) {
         AzureApiInfo info = getAvailableApiList();
+        if (info == null) {
+            return;
+        }
+
         List<AzureApi.ApiInfo> selectedAPIs = null;
         try (ApiSelectorDialog dlg = new ApiSelectorDialog(info.apis)) {
             selectedAPIs = dlg.getSelectedApi();
@@ -53,8 +57,7 @@ public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
         while (true) {
             urlString = UISupport.getDialogs().prompt("Input developer portal URL (i.e. developer.management.azure-api.net)", "Add API Specification from MS Azure", urlString);
             if (urlString == null) {
-                UISupport.showErrorMessage("Empty URL");
-                continue;
+                return null;
             }
 
             URL portalUrl = AzureApi.stringToUrl(urlString);
