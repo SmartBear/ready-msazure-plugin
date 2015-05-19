@@ -78,7 +78,7 @@ public class NewProjectDialog implements AutoCloseable {
 
     public Result show() {
         return dialog.show() && !loaderResult.canceled ?
-                new Result(projectNameField.getValue(), portalUrlField.getValue(), loaderResult.apis) :
+                new Result(projectNameField.getValue(), AzureApi.stringToUrl(portalUrlField.getValue()).toString(), loaderResult.apis) :
                 null;
     }
 
