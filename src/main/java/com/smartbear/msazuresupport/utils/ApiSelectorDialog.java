@@ -95,6 +95,10 @@ public class ApiSelectorDialog implements AutoCloseable {
             for (int index : selected) {
                 selectedAPIs.add(apis.get(index));
             }
+
+            if (dialog.getBooleanValue(SelectAPIFromMsAzureForm.TEST_SUITE)) {
+                entities.add(Service.TEST_SUITE);
+            }
         }
     }
 
@@ -108,5 +112,11 @@ public class ApiSelectorDialog implements AutoCloseable {
 
         @AField(description = "API Definition", type = AField.AFieldType.LABEL)
         public final static String SPEC = "Definition";
+
+        @AField(description = "", type = AField.AFieldType.SEPARATOR)
+        public final static String SEPERATOR = "Separator";
+
+        @AField(name = "###GenerateTestSuite", description = "Generate TestSuite", type = AField.AFieldType.BOOLEAN)
+        public final static String TEST_SUITE = "###GenerateTestSuite";
     }
 }
