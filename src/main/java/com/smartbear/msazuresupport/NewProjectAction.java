@@ -9,8 +9,8 @@ import com.eviware.soapui.support.UISupport;
 import com.eviware.soapui.support.action.support.AbstractSoapUIAction;
 import com.smartbear.msazuresupport.utils.ApiImporter;
 import com.smartbear.msazuresupport.utils.ApiSelectorDialog;
-import com.smartbear.msazuresupport.utils.AzureApi;
 import com.smartbear.msazuresupport.utils.NewProjectDialog;
+import com.smartbear.rapisupport.ServiceFactory;
 
 import java.util.List;
 
@@ -31,12 +31,13 @@ public class NewProjectAction extends AbstractSoapUIAction<WorkspaceImpl> {
         if (result == null) {
             return;
         }
-        List<AzureApi.ApiInfo> selectedAPIs = null;
+
+        ApiSelectorDialog.Result selResult = null;
         try (ApiSelectorDialog dlg = new ApiSelectorDialog(result.apis)) {
-            selectedAPIs = dlg.getSelectedApi();
+            selResult = dlg.getSelectedApi();
         }
 
-        if (selectedAPIs == null) {
+        if (selResult == null) {
             return;
         }
 
@@ -53,7 +54,9 @@ public class NewProjectAction extends AbstractSoapUIAction<WorkspaceImpl> {
             return;
         }
 
-        List<RestService> services = ApiImporter.importServices(result.portalUrl, selectedAPIs, project);
+        List<RestService> services = ApiImporter.importServices(result.portalUrl, selResult.selectedAPIs, project);
+        ServiceFactory.Build(project, services, selResult.entities);
+
         if (services.size() > 0) {
             UISupport.select(services.get(0));
         } else {

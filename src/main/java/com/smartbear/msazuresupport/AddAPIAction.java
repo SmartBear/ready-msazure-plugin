@@ -11,6 +11,7 @@ import com.smartbear.msazuresupport.utils.ApiImporter;
 import com.smartbear.msazuresupport.utils.ApiListLoader;
 import com.smartbear.msazuresupport.utils.ApiSelectorDialog;
 import com.smartbear.msazuresupport.utils.AzureApi;
+import com.smartbear.rapisupport.ServiceFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,13 +30,14 @@ public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
             return;
         }
 
-        List<AzureApi.ApiInfo> selectedAPIs = null;
+        ApiSelectorDialog.Result selResult = null;
         try (ApiSelectorDialog dlg = new ApiSelectorDialog(info.apis)) {
-            selectedAPIs = dlg.getSelectedApi();
+            selResult = dlg.getSelectedApi();
         }
 
-        if (selectedAPIs != null) {
-            List<RestService> services = ApiImporter.importServices(info.portalUrl.toString(), selectedAPIs, project);
+        if (selResult != null) {
+            List<RestService> services = ApiImporter.importServices(info.portalUrl.toString(), selResult.selectedAPIs, project);
+            ServiceFactory.Build(project, services, selResult.entities);
             if (services.size() > 0) {
                 UISupport.select(services.get(0));
             }

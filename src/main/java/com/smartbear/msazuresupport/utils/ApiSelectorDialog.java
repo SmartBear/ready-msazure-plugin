@@ -7,6 +7,7 @@ import com.eviware.x.form.XFormFieldValidator;
 import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AForm;
+import com.smartbear.rapisupport.Service;
 
 import javax.swing.AbstractListModel;
 import javax.swing.JList;
@@ -16,7 +17,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 public class ApiSelectorDialog implements AutoCloseable {
     private final List<AzureApi.ApiInfo> apis;
@@ -74,22 +77,25 @@ public class ApiSelectorDialog implements AutoCloseable {
         });
     }
 
-    public List<AzureApi.ApiInfo> getSelectedApi() {
-        if (dialog.show()) {
-            ArrayList<AzureApi.ApiInfo> result = new ArrayList<>();
-            int[] selected = apiListBox.getSelectedIndices();
-            for (int index : selected) {
-                result.add(apis.get(index));
-            }
-            return result;
-        } else {
-            return null;
-        }
+    public Result getSelectedApi() {
+        return dialog.show() ? new Result() : null;
     }
 
     @Override
     public void close() {
         dialog.release();
+    }
+
+    public class Result {
+        public final List<AzureApi.ApiInfo> selectedAPIs = new ArrayList<>();
+        public final Set<Service> entities = EnumSet.noneOf(Service.class);
+
+        public Result() {
+            int[] selected = apiListBox.getSelectedIndices();
+            for (int index : selected) {
+                selectedAPIs.add(apis.get(index));
+            }
+        }
     }
 
     @AForm(name = "Select API to Import", description = "Please select from the list which API specification(s) you want to import to the project.")
