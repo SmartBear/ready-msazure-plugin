@@ -7,6 +7,8 @@ import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.WsdlTestSuite;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.teststeps.registry.RestRequestStepFactory;
+import com.eviware.soapui.model.load.LoadTestModelItem;
+import com.eviware.soapui.model.testsuite.TestSuite;
 
 import java.util.List;
 import java.util.Set;
@@ -21,11 +23,12 @@ public class ServiceFactory {
         }
 
         for (RestService restService : services) {
+            WsdlTestSuite testSuite = null;
             if (entities.contains(Service.TEST_SUITE)) {
-                BuildTestSuite(project, restService);
+                testSuite = BuildTestSuite(project, restService);
             }
-            if (entities.contains(Service.LOAD_TEST)) {
-                //TODO: not implemented
+            if (testSuite != null && entities.contains(Service.LOAD_TEST)) {
+                BuildLoadTest(project, testSuite);
             }
             if (entities.contains(Service.SECUR_TEST)) {
                 //TODO: not implemented
@@ -47,5 +50,40 @@ public class ServiceFactory {
             }
         }
         return suite;
+    }
+
+    public static void BuildLoadTest(WsdlProject project, WsdlTestSuite testSuite) {
+        final int testCaseCount = testSuite.getTestCaseCount();
+        for (int i = 0; i < testCaseCount; i++) {
+            WsdlTestCase nextTestCase = testSuite.getTestCaseAt(i);
+            String name = nextTestCase.getLabel() + " LoadTest";
+            name = findNextLoadTestName(testSuite, name);
+            LoadTestModelItem loadUITest = nextTestCase.getProject().addNewLoadUITest(name);
+            loadUITest.getSettings().setString(LoadTestModelItem.SOAPUI_OBJECT_SOURCE_ID, nextTestCase.getId());
+            loadUITest.getSettings().setString(LoadTestModelItem.SOAPUI_OBJECT_SOURCE_TYPE, LoadTestModelItem.SOAPUI_OBJECT_SOURCE_TYPE_TESTCASE);
+        }
+    }
+
+    private static String findNextLoadTestName(TestSuite suite, String newName) {
+        if (!checkIfLoadTestNameExists(suite, newName)) {
+            return newName;
+        }
+
+        boolean isNewName = false;
+        String indexedName = null;
+        for (int index = 1; !isNewName; index++) {
+            indexedName = String.format("%s %d", newName, index);
+            isNewName = !checkIfLoadTestNameExists(suite, indexedName);
+        }
+        return  indexedName;
+    }
+
+    private static boolean checkIfLoadTestNameExists(TestSuite suite, String newName) {
+        for (LoadTestModelItem loadTest : suite.getProject().getLoadUITestList()) {
+            if (loadTest.getName().equals(newName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

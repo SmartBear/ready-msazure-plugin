@@ -3,6 +3,7 @@ package com.smartbear.msazuresupport.utils;
 import com.eviware.x.form.ValidationMessage;
 import com.eviware.x.form.XFormDialog;
 import com.eviware.x.form.XFormField;
+import com.eviware.x.form.XFormFieldListener;
 import com.eviware.x.form.XFormFieldValidator;
 import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
@@ -75,6 +76,19 @@ public class ApiSelectorDialog implements AutoCloseable {
                 }
             }
         });
+
+        final XFormField checkLoadTest = dialog.getFormField(SelectAPIFromMsAzureForm.LOAD_TEST);
+        checkLoadTest.setEnabled(false);
+        dialog.getFormField(SelectAPIFromMsAzureForm.TEST_SUITE).addFormFieldListener(new XFormFieldListener() {
+            @Override
+            public void valueChanged(XFormField xFormField, String s, String s1) {
+                boolean enabled = dialog.getBooleanValue(SelectAPIFromMsAzureForm.TEST_SUITE);
+                checkLoadTest.setEnabled(enabled);
+                if (!enabled) {
+                    checkLoadTest.setValue("false");
+                }
+            }
+        });
     }
 
     public Result getSelectedApi() {
@@ -99,6 +113,9 @@ public class ApiSelectorDialog implements AutoCloseable {
             if (dialog.getBooleanValue(SelectAPIFromMsAzureForm.TEST_SUITE)) {
                 entities.add(Service.TEST_SUITE);
             }
+            if (dialog.getBooleanValue(SelectAPIFromMsAzureForm.LOAD_TEST)) {
+                entities.add(Service.LOAD_TEST);
+            }
         }
     }
 
@@ -118,5 +135,8 @@ public class ApiSelectorDialog implements AutoCloseable {
 
         @AField(name = "###GenerateTestSuite", description = "Generate TestSuite", type = AField.AFieldType.BOOLEAN)
         public final static String TEST_SUITE = "###GenerateTestSuite";
+
+        @AField(name = "###GenerateLoadTest", description = "Generate LoadTest", type = AField.AFieldType.BOOLEAN)
+        public final static String LOAD_TEST = "###GenerateLoadTest";
     }
 }
