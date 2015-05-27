@@ -3,12 +3,14 @@ package com.smartbear.rapisupport;
 import com.eviware.soapui.impl.rest.RestRequest;
 import com.eviware.soapui.impl.rest.RestResource;
 import com.eviware.soapui.impl.rest.RestService;
+import com.eviware.soapui.impl.rest.mock.RestMockService;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.WsdlTestSuite;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.teststeps.registry.RestRequestStepFactory;
 import com.eviware.soapui.model.load.LoadTestModelItem;
 import com.eviware.soapui.model.testsuite.TestSuite;
+import com.smartbear.ready.core.utils.MachineResourceService;
 
 import java.util.List;
 import java.util.Set;
@@ -34,7 +36,7 @@ public class ServiceFactory {
                 //TODO: not implemented
             }
             if (entities.contains(Service.VIRT)) {
-                //TODO: not implemented
+                BuildVirt(project, restService);
             }
         }
     }
@@ -62,6 +64,22 @@ public class ServiceFactory {
             loadUITest.getSettings().setString(LoadTestModelItem.SOAPUI_OBJECT_SOURCE_ID, nextTestCase.getId());
             loadUITest.getSettings().setString(LoadTestModelItem.SOAPUI_OBJECT_SOURCE_TYPE, LoadTestModelItem.SOAPUI_OBJECT_SOURCE_TYPE_TESTCASE);
         }
+    }
+
+    public static void BuildVirt(WsdlProject project, RestService restService) {
+        final MachineResourceService machineResourceService = new MachineResourceService();
+
+        //borrowed from the RestMockServiceGenerator and AbstractMockServiceGenerator
+        RestMockService mockService = project.addNewRestMockService(restService.getName() + " Virt");
+        mockService.setPath("/");
+        if (machineResourceService.isValidPort(8088)) {
+            mockService.setPort(8088);
+        }
+        for (RestResource resource: restService.getAllResources()) {
+            mockService.addNewPopulatedMockOperation(resource);
+        }
+        //TODO: is EndPoint required?
+        //restService.addEndpoint(mockService.getLocalEndpoint());
     }
 
     private static String findNextLoadTestName(TestSuite suite, String newName) {

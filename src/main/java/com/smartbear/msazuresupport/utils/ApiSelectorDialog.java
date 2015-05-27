@@ -116,6 +116,9 @@ public class ApiSelectorDialog implements AutoCloseable {
             if (dialog.getBooleanValue(SelectAPIFromMsAzureForm.LOAD_TEST)) {
                 entities.add(Service.LOAD_TEST);
             }
+            if (dialog.getBooleanValue(SelectAPIFromMsAzureForm.VIRT)) {
+                entities.add(Service.VIRT);
+            }
         }
     }
 
@@ -138,5 +141,8 @@ public class ApiSelectorDialog implements AutoCloseable {
 
         @AField(name = "###GenerateLoadTest", description = "Generate LoadTest", type = AField.AFieldType.BOOLEAN)
         public final static String LOAD_TEST = "###GenerateLoadTest";
+
+        @AField(name = "###GenerateVirt", description = "Generate Virtual Host", type = AField.AFieldType.BOOLEAN)
+        public final static String VIRT = "###GenerateVirt";
     }
 }
