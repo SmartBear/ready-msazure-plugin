@@ -9,7 +9,11 @@ import com.eviware.soapui.impl.wsdl.WsdlTestSuite;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.teststeps.registry.RestRequestStepFactory;
 import com.eviware.soapui.model.load.LoadTestModelItem;
+import com.eviware.soapui.model.testsuite.TestStep;
 import com.eviware.soapui.model.testsuite.TestSuite;
+import com.eviware.soapui.security.SecurityTest;
+import com.eviware.soapui.security.registry.SecurityScanFactory;
+import com.eviware.soapui.support.SecurityScanUtil;
 import com.smartbear.ready.core.utils.MachineResourceService;
 
 import java.util.List;
@@ -32,8 +36,8 @@ public class ServiceFactory {
             if (testSuite != null && entities.contains(Service.LOAD_TEST)) {
                 BuildLoadTest(project, testSuite);
             }
-            if (entities.contains(Service.SECUR_TEST)) {
-                //TODO: not implemented
+            if (testSuite != null && entities.contains(Service.SECUR_TEST)) {
+                BuildSecurTest(project, testSuite);
             }
             if (entities.contains(Service.VIRT)) {
                 BuildVirt(project, restService);
@@ -63,6 +67,23 @@ public class ServiceFactory {
             LoadTestModelItem loadUITest = nextTestCase.getProject().addNewLoadUITest(name);
             loadUITest.getSettings().setString(LoadTestModelItem.SOAPUI_OBJECT_SOURCE_ID, nextTestCase.getId());
             loadUITest.getSettings().setString(LoadTestModelItem.SOAPUI_OBJECT_SOURCE_TYPE, LoadTestModelItem.SOAPUI_OBJECT_SOURCE_TYPE_TESTCASE);
+        }
+    }
+
+    public static void BuildSecurTest(WsdlProject project, WsdlTestSuite testSuite) {
+        //borrowed from the SecurityTestCreator and SecurityTestFromTestCaseCreator
+        List<SecurityScanFactory> allFactory = SecurityScanUtil.getAllSecurityScanFactories(true);
+        for (WsdlTestCase testCase: testSuite.getTestCaseList()) {
+            //TODO: is name required
+            SecurityTest secur = testCase.addNewSecurityTest("");
+            for (TestStep step: testCase.getTestStepList()) {
+                for (SecurityScanFactory scan: allFactory) {
+                    if (SecurityScanUtil.scanIsApplicableForTestStep(step, scan.getSecurityScanName())) {
+                        secur.addNewSecurityScan(step, scan.getSecurityScanName());
+                    }
+
+                }
+            }
         }
     }
 

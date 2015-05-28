@@ -78,14 +78,18 @@ public class ApiSelectorDialog implements AutoCloseable {
         });
 
         final XFormField checkLoadTest = dialog.getFormField(SelectAPIFromMsAzureForm.LOAD_TEST);
+        final XFormField checkSecurTest = dialog.getFormField(SelectAPIFromMsAzureForm.SECUR_TEST);
         checkLoadTest.setEnabled(false);
+        checkSecurTest.setEnabled(false);
         dialog.getFormField(SelectAPIFromMsAzureForm.TEST_SUITE).addFormFieldListener(new XFormFieldListener() {
             @Override
             public void valueChanged(XFormField xFormField, String s, String s1) {
                 boolean enabled = dialog.getBooleanValue(SelectAPIFromMsAzureForm.TEST_SUITE);
                 checkLoadTest.setEnabled(enabled);
+                checkSecurTest.setEnabled(enabled);
                 if (!enabled) {
                     checkLoadTest.setValue("false");
+                    checkSecurTest.setValue("false");
                 }
             }
         });
@@ -119,6 +123,9 @@ public class ApiSelectorDialog implements AutoCloseable {
             if (dialog.getBooleanValue(SelectAPIFromMsAzureForm.VIRT)) {
                 entities.add(Service.VIRT);
             }
+            if (dialog.getBooleanValue(SelectAPIFromMsAzureForm.SECUR_TEST)) {
+                entities.add(Service.SECUR_TEST);
+            }
         }
     }
 
@@ -141,6 +148,9 @@ public class ApiSelectorDialog implements AutoCloseable {
 
         @AField(name = "###GenerateLoadTest", description = "Generate LoadTest", type = AField.AFieldType.BOOLEAN)
         public final static String LOAD_TEST = "###GenerateLoadTest";
+
+        @AField(name = "###GenerateSecurTest", description = "Generate Security Test", type = AField.AFieldType.BOOLEAN)
+        public final static String SECUR_TEST = "###GenerateSecurTest";
 
         @AField(name = "###GenerateVirt", description = "Generate Virtual Host", type = AField.AFieldType.BOOLEAN)
         public final static String VIRT = "###GenerateVirt";
