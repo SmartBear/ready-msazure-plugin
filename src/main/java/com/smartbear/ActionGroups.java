@@ -94,7 +94,7 @@ public class ActionGroups {
      * Actions applied to test cases.
      * Have your action class extend AbstractSoapUIAction<WsdlTestCase>.
      */
-    public static final String TEST_CASE_ACTIONS = "WsdlTestSuiteActions";
+    public static final String TEST_CASE_ACTIONS = "WsdlTestCaseActions";
 
     /*
      * Actions applied to all test steps.
