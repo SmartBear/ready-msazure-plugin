@@ -10,6 +10,7 @@ import com.eviware.soapui.support.action.support.AbstractSoapUIAction;
 import com.smartbear.msazuresupport.utils.ApiImporter;
 import com.smartbear.msazuresupport.utils.ApiSelectorDialog;
 import com.smartbear.msazuresupport.utils.NewProjectDialog;
+import com.smartbear.msazuresupport.utils.SubscriptionKeyInputDialog;
 import com.smartbear.rapisupport.ServiceFactory;
 
 import java.util.List;
@@ -39,6 +40,12 @@ public class NewProjectAction extends AbstractSoapUIAction<WorkspaceImpl> {
 
         if (selResult == null) {
             return;
+        }
+
+        try (SubscriptionKeyInputDialog dlg = new SubscriptionKeyInputDialog(selResult.selectedAPIs)) {
+            if (!dlg.show()) {
+                return;
+            }
         }
 
         WsdlProject project;

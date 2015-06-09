@@ -11,6 +11,7 @@ import com.smartbear.msazuresupport.utils.ApiImporter;
 import com.smartbear.msazuresupport.utils.ApiListLoader;
 import com.smartbear.msazuresupport.utils.ApiSelectorDialog;
 import com.smartbear.msazuresupport.utils.AzureApi;
+import com.smartbear.msazuresupport.utils.SubscriptionKeyInputDialog;
 import com.smartbear.rapisupport.ServiceFactory;
 
 import java.net.URL;
@@ -36,6 +37,11 @@ public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
         }
 
         if (selResult != null) {
+            try (SubscriptionKeyInputDialog dlg = new SubscriptionKeyInputDialog(selResult.selectedAPIs)) {
+                if (!dlg.show()) {
+                    return;
+                }
+            }
             List<RestService> services = ApiImporter.importServices(info.portalUrl.toString(), selResult.selectedAPIs, project);
             ServiceFactory.Build(project, services, selResult.entities);
             if (services.size() > 0) {
@@ -48,7 +54,7 @@ public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
         public final URL portalUrl;
         public final List<AzureApi.ApiInfo> apis;
 
-        public AzureApiInfo(URL portalUrl, List<AzureApi.ApiInfo> apis)  {
+        public AzureApiInfo(URL portalUrl, List<AzureApi.ApiInfo> apis) {
             this.portalUrl = portalUrl;
             this.apis = new ArrayList<>(apis);
         }
