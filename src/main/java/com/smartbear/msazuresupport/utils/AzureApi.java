@@ -45,12 +45,14 @@ public final class AzureApi {
         public final String description;
         public final String path;
         public final String id;
+        private String subscriptionKey;
 
         public ApiInfo(String name, String description, String path, String id) {
             this.name = name;
             this.description = description;
             this.path = path;
             this.id = id;
+            this.subscriptionKey = "";
         }
 
         public ApiInfo(JsonObject obj) {
@@ -58,6 +60,7 @@ public final class AzureApi {
             this.description = obj.getString("description", null);
             this.path = obj.getString("path", null);
             this.id = obj.getString("id", null);
+            this.subscriptionKey = "";
         }
 
         public Boolean isValid() {
@@ -67,6 +70,14 @@ public final class AzureApi {
         @Override
         public String toString() {
             return String.format("name = %s, path = %s, id = %s", name, path, id);
+        }
+
+        public String getSubscriptionKey() {
+            return subscriptionKey;
+        }
+
+        public void setSubscriptionKey(String subscriptionKey) {
+            this.subscriptionKey = subscriptionKey;
         }
     }
 
@@ -178,9 +189,11 @@ public final class AzureApi {
 
     private static void addSubscriptionKeyHeaderToAllRequests(RestService rest, ApiInfo api) {
         String customPropertyName = "subscription-key-" + api.name.replaceAll("\\s", "-");
-        if (!rest.getProject().hasProperty(customPropertyName)) {
-            rest.getProject().addProperty(customPropertyName).setValue("");
+        WsdlProject project = rest.getProject();
+        if (!project.hasProperty(customPropertyName)) {
+            project.addProperty(customPropertyName);
         }
+        project.getProperty(customPropertyName).setValue(api.getSubscriptionKey());
 
         for (RestResource resource: rest.getAllOperations()) {
             for (int i = 0; i < resource.getRequestCount(); i++) {
