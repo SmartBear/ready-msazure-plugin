@@ -7,6 +7,7 @@ import com.eviware.soapui.support.UISupport;
 import com.eviware.x.dialogs.Worker;
 import com.eviware.x.dialogs.XProgressDialog;
 import com.eviware.x.dialogs.XProgressMonitor;
+import com.smartbear.msazuresupport.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public final class ApiImporter implements Worker {
     }
 
     public static List<RestService> importServices(String portalUrl, List<AzureApi.ApiInfo> apis, WsdlProject project) {
-        ApiImporter worker = new ApiImporter(UISupport.getDialogs().createProgressDialog("Importing APIs...", 100, "", true), portalUrl, apis, project);
+        ApiImporter worker = new ApiImporter(UISupport.getDialogs().createProgressDialog(Strings.Executing.IMPORT_PROGRESS, 100, "", true), portalUrl, apis, project);
         try {
             worker.waitDialog.run(worker);
         } catch (Exception e) {
@@ -48,12 +49,12 @@ public final class ApiImporter implements Worker {
                 addedServices.add(service);
             } catch (Throwable e) {
                 SoapUI.logError(e);
-                errors.append(String.format("Failed to read API description for[%s] - [%s]\n", api.name, e.getMessage()));
+                errors.append(String.format(Strings.Executing.IMPORT_ERROR, api.name, e.getMessage()));
             }
         }
 
         if (errors.length() > 0) {
-            errors.append("Please contact MS Azure support for assistance");
+            errors.append(Strings.Executing.IMPORT_ERROR_TAIL);
         }
         return null;
     }

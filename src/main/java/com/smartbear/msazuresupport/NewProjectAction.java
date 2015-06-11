@@ -15,11 +15,11 @@ import com.smartbear.rapisupport.ServiceFactory;
 
 import java.util.List;
 
-@PluginImportMethod(label = "MS Azure Developer Portal (REST)")
+@PluginImportMethod(label = Strings.NewProjectAction.ACTION_CAPTION)
 public class NewProjectAction extends AbstractSoapUIAction<WorkspaceImpl> {
 
     public NewProjectAction() {
-        super("Create Project From MS Azure", "Creates a new project from API specification on MS Azure developer portal.");
+        super(Strings.NewProjectAction.NAME, Strings.NewProjectAction.DESCRIPTION);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class NewProjectAction extends AbstractSoapUIAction<WorkspaceImpl> {
             project = target.createProject(result.projectName, null);
         } catch (Exception e) {
             SoapUI.logError(e);
-            UISupport.showErrorMessage(String.format("Unable to create Project because of %s exception with \"%s\" message", e.getClass().getName(), e.getMessage()));
+            UISupport.showErrorMessage(String.format(Strings.NewProjectAction.UNABLE_CREATE_ERROR, e.getClass().getName(), e.getMessage()));
             return;
         }
 

@@ -8,6 +8,7 @@ import com.eviware.x.form.XFormFieldValidator;
 import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AForm;
+import com.smartbear.msazuresupport.Strings;
 import com.smartbear.rapisupport.Service;
 
 import javax.swing.AbstractListModel;
@@ -70,7 +71,7 @@ public class ApiSelectorDialog implements AutoCloseable {
             public ValidationMessage[] validateField(XFormField formField) {
                 int[] selected = apiListBox.getSelectedIndices();
                 if (selected == null || selected.length == 0) {
-                    return new ValidationMessage[]{new ValidationMessage("Please select at least one API specification to add.", formField)};
+                    return new ValidationMessage[]{new ValidationMessage(Strings.SelectApiDialog.NOTHING_SELECTED_WARNING, formField)};
                 } else {
                     return new ValidationMessage[0];
                 }
@@ -129,30 +130,30 @@ public class ApiSelectorDialog implements AutoCloseable {
         }
     }
 
-    @AForm(name = "Select API to Import", description = "Please select from the list which API specification(s) you want to import to the project.")
+    @AForm(name = Strings.SelectApiDialog.CAPTION, description = Strings.SelectApiDialog.DESCRIPTION)
     public interface SelectAPIFromMsAzureForm {
-        @AField(description = "API Name", type = AField.AFieldType.COMPONENT)
+        @AField(description = Strings.SelectApiDialog.NAME_LABEL, type = AField.AFieldType.COMPONENT)
         public final static String NAME = "Name";
 
-        @AField(description = "API Description", type = AField.AFieldType.INFORMATION)
+        @AField(description = Strings.SelectApiDialog.DESCRIPTION_LABEL, type = AField.AFieldType.INFORMATION)
         public final static String DESCRIPTION = "Description";
 
-        @AField(description = "API Definition", type = AField.AFieldType.LABEL)
+        @AField(description = Strings.SelectApiDialog.DEFINITION_LABEL, type = AField.AFieldType.LABEL)
         public final static String SPEC = "Definition";
 
         @AField(description = "", type = AField.AFieldType.SEPARATOR)
         public final static String SEPERATOR = "Separator";
 
-        @AField(name = "###GenerateTestSuite", description = "Generate TestSuite", type = AField.AFieldType.BOOLEAN)
+        @AField(name = "###GenerateTestSuite", description = Strings.SelectApiDialog.GEN_TEST_SUITE, type = AField.AFieldType.BOOLEAN)
         public final static String TEST_SUITE = "###GenerateTestSuite";
 
-        @AField(name = "###GenerateLoadTest", description = "Generate LoadTest", type = AField.AFieldType.BOOLEAN)
+        @AField(name = "###GenerateLoadTest", description = Strings.SelectApiDialog.GEN_LOAD_TEST, type = AField.AFieldType.BOOLEAN)
         public final static String LOAD_TEST = "###GenerateLoadTest";
 
-        @AField(name = "###GenerateSecurTest", description = "Generate Security Test", type = AField.AFieldType.BOOLEAN)
+        @AField(name = "###GenerateSecurTest", description = Strings.SelectApiDialog.GEN_SECUR_TEST, type = AField.AFieldType.BOOLEAN)
         public final static String SECUR_TEST = "###GenerateSecurTest";
 
-        @AField(name = "###GenerateVirt", description = "Generate Virtual Host", type = AField.AFieldType.BOOLEAN)
+        @AField(name = "###GenerateVirt", description = Strings.SelectApiDialog.GEN_VIRT_HOST, type = AField.AFieldType.BOOLEAN)
         public final static String VIRT = "###GenerateVirt";
     }
 }

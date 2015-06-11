@@ -12,6 +12,7 @@ import com.eviware.soapui.support.ModelItemNamer;
 import com.eviware.soapui.support.StringUtils;
 import com.eviware.soapui.support.types.StringToStringsMap;
 import com.eviware.soapui.support.xml.XmlUtils;
+import com.smartbear.msazuresupport.Strings;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.w3c.dom.Document;
@@ -82,17 +83,17 @@ public final class AzureApi {
     }
 
     public static URL stringToUrl(String s) {
-        if (StringUtils.isNullOrEmpty(s))
+        if (StringUtils.isNullOrEmpty(s)) {
             return null;
+        }
 
-        if (!s.toLowerCase().startsWith( "http://") && !s.toLowerCase().startsWith("https://")) {
+        if (!s.toLowerCase().startsWith("http://") && !s.toLowerCase().startsWith("https://")) {
             s = "https://" + s;
         }
 
         try {
             return new URL(s);
-        }
-        catch (MalformedURLException e){
+        } catch (MalformedURLException e) {
             SoapUI.logError(e);
             return null;
         }
@@ -104,19 +105,19 @@ public final class AzureApi {
         try {
             reader = new InputStreamReader(url.openStream());
         } catch (FileNotFoundException e) {
-            throw new FileNotFoundException("No APIs available at this location. Please contact MS Azure support for assistance.");
+            throw new FileNotFoundException(Strings.AzureRestApi.UNAVAILABLE_API_ERROR);
         }
 
         JsonObject jsonObject;
         try (javax.json.JsonReader jsonReader = javax.json.Json.createReader(reader)) {
             jsonObject = jsonReader.readObject();
         } catch (JsonParsingException e) {
-            throw new IOException("The list of APIs is not in the expected JSON format. Please contact MS Azure support for assistance.", e);
+            throw new IOException(Strings.AzureRestApi.INVALID_RESPONSE_FORMAT_ERROR, e);
         }
 
         JsonValue apiList = jsonObject.get("value");
         if (apiList == null || !(apiList instanceof JsonArray)) {
-            throw new IOException("API specification list has incorrect format: no \"value\" entry has been found.\nPlease contact MS Azure support for assistance.");
+            throw new IOException(Strings.AzureRestApi.INVALID_SPECIFICATION_ERROR);
         }
 
         JsonArray apis = (JsonArray) apiList;
@@ -195,7 +196,7 @@ public final class AzureApi {
         }
         project.getProperty(customPropertyName).setValue(api.getSubscriptionKey());
 
-        for (RestResource resource: rest.getAllOperations()) {
+        for (RestResource resource : rest.getAllOperations()) {
             for (int i = 0; i < resource.getRequestCount(); i++) {
                 RestRequest request = resource.getRequestAt(i);
                 StringToStringsMap headers = request.getRequestHeaders();

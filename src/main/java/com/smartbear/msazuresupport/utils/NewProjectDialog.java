@@ -9,6 +9,7 @@ import com.eviware.x.form.XFormFieldValidator;
 import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AForm;
+import com.smartbear.msazuresupport.Strings;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,12 +51,12 @@ public class NewProjectDialog implements AutoCloseable {
             @Override
             public ValidationMessage[] validateField(XFormField formField) {
                 if (StringUtils.isNullOrEmpty(formField.getValue())) {
-                    return new ValidationMessage[]{new ValidationMessage("Please enter the developer portal URL.", formField)};
+                    return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.EMPTY_URL_WARNING, formField)};
                 }
 
                 URL portalUrl = AzureApi.stringToUrl(formField.getValue());
                 if (portalUrl == null) {
-                    return new ValidationMessage[]{new ValidationMessage("Invalid developer portal URL.", formField)};
+                    return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.INVALID_URL_WARNING, formField)};
                 }
                 loaderResult = ApiListLoader.downloadList(portalUrl);
                 if (StringUtils.hasContent(loaderResult.error)) {
@@ -69,7 +70,7 @@ public class NewProjectDialog implements AutoCloseable {
             @Override
             public ValidationMessage[] validateField(XFormField formField) {
                 if (StringUtils.isNullOrEmpty(formField.getValue())) {
-                    return new ValidationMessage[]{new ValidationMessage("Please enter project name.", formField)};
+                    return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.EMPTY_PROJECT_WARNING, formField)};
                 }
                 return new ValidationMessage[0];
             }
@@ -87,6 +88,8 @@ public class NewProjectDialog implements AutoCloseable {
         dialog.release();
     }
 
+    private static final String URL_TAIL = ".management.azure-api.net";
+
     private String getDefaultProjectName(String newValue) {
         if (!StringUtils.hasContent(newValue)) {
             return "";
@@ -101,19 +104,19 @@ public class NewProjectDialog implements AutoCloseable {
             }
         }
 
-        if (newValue.toLowerCase().endsWith(".management.azure-api.net")) {
-            newValue = newValue.substring(0, newValue.length() - ".management.azure-api.net".length());
+        if (newValue.toLowerCase().endsWith(URL_TAIL)) {
+            newValue = newValue.substring(0, newValue.length() - URL_TAIL.length());
         }
 
         return newValue;
     }
 
-    @AForm(name = "Create Project From API Specification on MS Azure Portal", description = "Creates a new Project from API specification on MS Azure developer portal in this workspace")
+    @AForm(name = Strings.NewProjectDialog.CAPTION, description = Strings.NewProjectDialog.DESCRIPTION)
     private interface Form {
-        @AField(name = "Project Name", description = "Name of the project", type = AField.AFieldType.STRING)
-        public final static String PROJECT_NAME = "Project Name";
+        @AField(name = Strings.NewProjectDialog.PROJECT_LABEL, description = Strings.NewProjectDialog.PROJECT_DESCRIPTION, type = AField.AFieldType.STRING)
+        public final static String PROJECT_NAME = Strings.NewProjectDialog.PROJECT_LABEL;
 
-        @AField(name = "Developer Portal URL", description = "Developer portal URL (i.e. developer.management.azure-api.net)", type = AField.AFieldType.STRING)
-        public final static String DEVELOPER_PORTAL_URL = "Developer Portal URL";
+        @AField(name = Strings.NewProjectDialog.URL_LABEL, description = Strings.NewProjectDialog.URL_DESCRIPTION, type = AField.AFieldType.STRING)
+        public final static String DEVELOPER_PORTAL_URL = Strings.NewProjectDialog.URL_LABEL;
     }
 }

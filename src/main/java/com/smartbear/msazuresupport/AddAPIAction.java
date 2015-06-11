@@ -21,7 +21,7 @@ import java.util.List;
 @ActionConfiguration(actionGroup = ActionGroups.OPEN_PROJECT_ACTIONS, separatorBefore = true)
 public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
     public AddAPIAction() {
-        super("Add API From MS Azure", "Adds API from the MS Azure developer portal.");
+        super(Strings.AddApiAction.NAME, Strings.AddApiAction.DESCRIPTION);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
     private AzureApiInfo getAvailableApiList() {
         String urlString = null;
         while (true) {
-            urlString = UISupport.getDialogs().prompt("Input developer portal URL (i.e. developer.management.azure-api.net)", "Add API Specification from MS Azure", urlString);
+            urlString = UISupport.getDialogs().prompt(Strings.AddApiAction.PROMPT_API_DIALOG_DESCRIPTION, Strings.AddApiAction.PROMPT_API_DIALOG_CAPTION, urlString);
             if (urlString == null) {
                 return null;
             }

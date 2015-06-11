@@ -6,6 +6,7 @@ import com.eviware.soapui.support.UISupport;
 import com.eviware.x.dialogs.Worker;
 import com.eviware.x.dialogs.XProgressDialog;
 import com.eviware.x.dialogs.XProgressMonitor;
+import com.smartbear.msazuresupport.Strings;
 
 import java.net.URL;
 import java.util.List;
@@ -40,7 +41,7 @@ public class ApiListLoader implements Worker {
     }
 
     public static Result downloadList(URL developerPortalUrl) {
-        ApiListLoader worker = new ApiListLoader(developerPortalUrl, UISupport.getDialogs().createProgressDialog("Getting APIs List...", 0, "", true));
+        ApiListLoader worker = new ApiListLoader(developerPortalUrl, UISupport.getDialogs().createProgressDialog(Strings.Executing.QUERY_API_PROGRESS, 0, "", true));
         try {
             worker.waitDialog.run(worker);
         } catch (Exception ex) {
@@ -71,11 +72,11 @@ public class ApiListLoader implements Worker {
         }
         waitDialog.setVisible(false);
         if (StringUtils.hasContent(apiRetrievingError)) {
-            result.addError("Unable to read API list from the specified MS Azure developer portal because of the following error:\n" + apiRetrievingError);
+            result.addError(Strings.Executing.QUERY_API_ERROR + apiRetrievingError);
             return;
         }
         if (result.apis == null || result.apis.size() == 0) {
-            result.addError("No API is accessible at the specified URL or registered correctly.");
+            result.addError(Strings.Executing.QUERY_API_EMPTY_ERROR);
         }
     }
 
