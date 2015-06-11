@@ -33,6 +33,9 @@ public final class Strings {
         public static final String EMPTY_PROJECT_WARNING = "Please enter project name.";
         public static final String EMPTY_URL_WARNING = "Please enter the developer portal URL.";
         public static final String INVALID_URL_WARNING = "Invalid developer portal URL.";
+        public static final String CREDENTIALS_LABEL = "Credentials";
+        public static final String ACCESS_TOKEN_LABEL = "Access Token";
+        public static final String EMPTY_ACCESS_TOKEN_WARNING = "Please enter Access Token.";
     }
 
     public static final class SelectApiDialog {

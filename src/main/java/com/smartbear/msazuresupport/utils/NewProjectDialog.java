@@ -19,11 +19,13 @@ public class NewProjectDialog implements AutoCloseable {
     public static class Result {
         public final String projectName;
         public final String portalUrl;
+        public final String accessToken;
         public final List<AzureApi.ApiInfo> apis;
 
-        public Result(String projectName, String portalUrl, List<AzureApi.ApiInfo> apis) {
+        public Result(String projectName, String portalUrl, String accessToken, List<AzureApi.ApiInfo> apis) {
             this.projectName = projectName;
             this.portalUrl = portalUrl;
+            this.accessToken = accessToken;
             this.apis = new ArrayList<>(apis);
         }
     }
@@ -31,12 +33,14 @@ public class NewProjectDialog implements AutoCloseable {
     private XFormDialog dialog;
     private final XFormField portalUrlField;
     private final XFormField projectNameField;
+    private final XFormField accessTokenField;
     private ApiListLoader.Result loaderResult = null;
 
     public NewProjectDialog() {
         dialog = ADialogBuilder.buildDialog(Form.class);
         portalUrlField = dialog.getFormField(Form.DEVELOPER_PORTAL_URL);
         projectNameField = dialog.getFormField(Form.PROJECT_NAME);
+        accessTokenField = dialog.getFormField(Form.ACCESS_TOKEN);
 
         portalUrlField.addFormFieldListener(new XFormFieldListener() {
             @Override
@@ -75,11 +79,23 @@ public class NewProjectDialog implements AutoCloseable {
                 return new ValidationMessage[0];
             }
         });
+        accessTokenField.addFormFieldValidator(new XFormFieldValidator() {
+            @Override
+            public ValidationMessage[] validateField(XFormField formField) {
+                if (StringUtils.isNullOrEmpty(formField.getValue())) {
+                    return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.EMPTY_ACCESS_TOKEN_WARNING, formField)};
+                }
+                return new ValidationMessage[0];
+            }
+        });
     }
 
     public Result show() {
         return dialog.show() && !loaderResult.canceled ?
-                new Result(projectNameField.getValue(), AzureApi.stringToUrl(portalUrlField.getValue()).toString(), loaderResult.apis) :
+                new Result(projectNameField.getValue(),
+                        AzureApi.stringToUrl(portalUrlField.getValue()).toString(),
+                        accessTokenField.getValue(),
+                        loaderResult.apis) :
                 null;
     }
 
@@ -112,11 +128,17 @@ public class NewProjectDialog implements AutoCloseable {
     }
 
     @AForm(name = Strings.NewProjectDialog.CAPTION, description = Strings.NewProjectDialog.DESCRIPTION)
-    private interface Form {
+    public interface Form {
         @AField(name = Strings.NewProjectDialog.PROJECT_LABEL, description = Strings.NewProjectDialog.PROJECT_DESCRIPTION, type = AField.AFieldType.STRING)
         public final static String PROJECT_NAME = Strings.NewProjectDialog.PROJECT_LABEL;
 
         @AField(name = Strings.NewProjectDialog.URL_LABEL, description = Strings.NewProjectDialog.URL_DESCRIPTION, type = AField.AFieldType.STRING)
         public final static String DEVELOPER_PORTAL_URL = Strings.NewProjectDialog.URL_LABEL;
+
+        @AField(description = Strings.NewProjectDialog.CREDENTIALS_LABEL, type = AField.AFieldType.SEPARATOR)
+        public final static String CREDENTIALS = Strings.NewProjectDialog.CREDENTIALS_LABEL;
+
+        @AField(name = Strings.NewProjectDialog.ACCESS_TOKEN_LABEL, description = "", type = AField.AFieldType.STRING)
+        public final static String ACCESS_TOKEN = Strings.NewProjectDialog.ACCESS_TOKEN_LABEL;
     }
 }
