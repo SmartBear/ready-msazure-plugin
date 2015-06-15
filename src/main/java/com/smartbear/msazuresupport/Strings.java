@@ -35,7 +35,9 @@ public final class Strings {
         public static final String INVALID_URL_WARNING = "Invalid developer portal URL.";
         public static final String CREDENTIALS_LABEL = "Credentials";
         public static final String ACCESS_TOKEN_LABEL = "Access Token";
+        public static final String ACCESS_TOKEN_DESCRIPTION = "API Management REST API Access Token";
         public static final String EMPTY_ACCESS_TOKEN_WARNING = "Please enter Access Token.";
+        public static final String INVALID_ACCESS_TOKEN_WARNING = "Please enter valid Access Token.";
     }
 
     public static final class SelectApiDialog {

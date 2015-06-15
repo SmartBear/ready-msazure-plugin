@@ -62,10 +62,12 @@ public class NewProjectDialog implements AutoCloseable {
                 if (portalUrl == null) {
                     return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.INVALID_URL_WARNING, formField)};
                 }
-                loaderResult = ApiListLoader.downloadList(new AzureApi.ConnectionSettings(portalUrl, ""));
-                if (StringUtils.hasContent(loaderResult.error)) {
-                    return new ValidationMessage[]{new ValidationMessage(loaderResult.error, formField)};
+
+                ValidationMessage[] msg = downloadApiList();
+                if (msg.length > 0) {
+                    return msg;
                 }
+
                 return new ValidationMessage[0];
             }
         });
@@ -85,6 +87,12 @@ public class NewProjectDialog implements AutoCloseable {
                 if (StringUtils.isNullOrEmpty(formField.getValue())) {
                     return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.EMPTY_ACCESS_TOKEN_WARNING, formField)};
                 }
+
+                ValidationMessage[] msg = downloadApiList();
+                if (msg.length > 0) {
+                    return msg;
+                }
+
                 return new ValidationMessage[0];
             }
         });
@@ -102,6 +110,20 @@ public class NewProjectDialog implements AutoCloseable {
     @Override
     public void close() {
         dialog.release();
+    }
+
+    private ValidationMessage[] downloadApiList() {
+        String portalUrl = portalUrlField.getValue();
+        String accessToken = accessTokenField.getValue();
+        if (!StringUtils.isNullOrEmpty(portalUrl) && !StringUtils.isNullOrEmpty(accessToken)) {
+            loaderResult = ApiListLoader.downloadList(new AzureApi.ConnectionSettings(portalUrl, accessToken));
+            if (loaderResult.authorizationFailed) {
+                return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.INVALID_ACCESS_TOKEN_WARNING, accessTokenField)};
+            } else if (StringUtils.hasContent(loaderResult.error)) {
+                return new ValidationMessage[]{new ValidationMessage(loaderResult.error, portalUrlField)};
+            }
+        }
+        return new ValidationMessage[0];
     }
 
     private static final String URL_TAIL = ".management.azure-api.net";
@@ -138,7 +160,7 @@ public class NewProjectDialog implements AutoCloseable {
         @AField(description = Strings.NewProjectDialog.CREDENTIALS_LABEL, type = AField.AFieldType.SEPARATOR)
         public final static String CREDENTIALS = Strings.NewProjectDialog.CREDENTIALS_LABEL;
 
-        @AField(name = Strings.NewProjectDialog.ACCESS_TOKEN_LABEL, description = "", type = AField.AFieldType.STRING)
+        @AField(name = Strings.NewProjectDialog.ACCESS_TOKEN_LABEL, description = Strings.NewProjectDialog.ACCESS_TOKEN_DESCRIPTION, type = AField.AFieldType.STRING)
         public final static String ACCESS_TOKEN = Strings.NewProjectDialog.ACCESS_TOKEN_LABEL;
     }
 }
