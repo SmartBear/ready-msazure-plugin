@@ -42,7 +42,8 @@ public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
                     return;
                 }
             }
-            List<RestService> services = ApiImporter.importServices(info.portalUrl.toString(), selResult.selectedAPIs, project);
+            //TODO: set valid accessToken
+            List<RestService> services = ApiImporter.importServices(new AzureApi.ConnectionSettings(info.portalUrl, ""), selResult.selectedAPIs, project);
             ServiceFactory.Build(project, services, selResult.entities);
             if (services.size() > 0) {
                 UISupport.select(services.get(0));
@@ -74,7 +75,8 @@ public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
                 continue;
             }
 
-            ApiListLoader.Result loaderResult = ApiListLoader.downloadList(portalUrl);
+            //TODO: set valid accessToken
+            ApiListLoader.Result loaderResult = ApiListLoader.downloadList(new AzureApi.ConnectionSettings(portalUrl, ""));
             if (loaderResult.canceled) {
                 return null;
             }

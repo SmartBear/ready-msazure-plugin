@@ -15,22 +15,22 @@ import java.util.List;
 public final class ApiImporter implements Worker {
     private Boolean canceled = false;
     private final XProgressDialog waitDialog;
-    private final String portalUrl;
+    private final AzureApi.ConnectionSettings connectionSettings;
     private final List<AzureApi.ApiInfo> apis;
     private final WsdlProject project;
     private final ArrayList<RestService> addedServices = new ArrayList<>();
     private final StringBuilder errors = new StringBuilder();
 
 
-    private ApiImporter(XProgressDialog waitDialog, String portalUrl, List<AzureApi.ApiInfo> apis, WsdlProject project) {
+    private ApiImporter(XProgressDialog waitDialog, AzureApi.ConnectionSettings connectionSettings, List<AzureApi.ApiInfo> apis, WsdlProject project) {
         this.waitDialog = waitDialog;
-        this.portalUrl = portalUrl;
+        this.connectionSettings = connectionSettings;
         this.apis = apis;
         this.project = project;
     }
 
-    public static List<RestService> importServices(String portalUrl, List<AzureApi.ApiInfo> apis, WsdlProject project) {
-        ApiImporter worker = new ApiImporter(UISupport.getDialogs().createProgressDialog(Strings.Executing.IMPORT_PROGRESS, 100, "", true), portalUrl, apis, project);
+    public static List<RestService> importServices(AzureApi.ConnectionSettings connectionSettings, List<AzureApi.ApiInfo> apis, WsdlProject project) {
+        ApiImporter worker = new ApiImporter(UISupport.getDialogs().createProgressDialog(Strings.Executing.IMPORT_PROGRESS, 100, "", true), connectionSettings, apis, project);
         try {
             worker.waitDialog.run(worker);
         } catch (Exception e) {
@@ -45,7 +45,7 @@ public final class ApiImporter implements Worker {
     public Object construct(XProgressMonitor xProgressMonitor) {
         for (AzureApi.ApiInfo api : apis) {
             try {
-                RestService service = AzureApi.importApiToProject(portalUrl, api, project);
+                RestService service = AzureApi.importApiToProject(connectionSettings, api, project);
                 addedServices.add(service);
             } catch (Throwable e) {
                 SoapUI.logError(e);

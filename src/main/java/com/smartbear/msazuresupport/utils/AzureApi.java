@@ -82,6 +82,29 @@ public final class AzureApi {
         }
     }
 
+    public static class ConnectionSettings {
+        public final URL Url;
+        public final String accessToken;
+
+        public ConnectionSettings(URL url, String accessToken) {
+            this.Url = url;
+            this.accessToken = accessToken;
+        }
+
+        public ConnectionSettings(String url, String accessToken) {
+            this.Url = toURL(url);
+            this.accessToken = accessToken;
+        }
+
+        private URL toURL(String url) {
+            try {
+                return new URL(url);
+            } catch (MalformedURLException e) {
+                return null;
+            }
+        }
+    }
+
     public static URL stringToUrl(String s) {
         if (StringUtils.isNullOrEmpty(s)) {
             return null;
@@ -99,8 +122,9 @@ public final class AzureApi {
         }
     }
 
-    public static List<ApiInfo> getApiList(URL portalUrl) throws IOException {
-        URL url = new URL(portalUrl, "/apis?api-version=2014-02-14-preview");
+    public static List<ApiInfo> getApiList(ConnectionSettings connectionSettings) throws IOException {
+        URL url = new URL(connectionSettings.Url, "/apis?api-version=2014-02-14-preview");
+
         Reader reader;
         try {
             reader = new InputStreamReader(url.openStream());
@@ -134,8 +158,8 @@ public final class AzureApi {
         return result;
     }
 
-    public static File saveToTmpFile(String portalUrl, String apiID) throws IOException {
-        URL url = new URL(new URL(portalUrl), apiID + "?api-version=2014-02-14&export=true");
+    public static File saveToTmpFile(ConnectionSettings connectionSettings, String apiID) throws IOException {
+        URL url = new URL(connectionSettings.Url, apiID + "?api-version=2014-02-14&export=true");
         URLConnection connection = url.openConnection();
 
         connection.setDoInput(true);
@@ -178,8 +202,8 @@ public final class AzureApi {
         return file;
     }
 
-    public static RestService importApiToProject(String portalUrl, ApiInfo api, WsdlProject project) throws IOException, ReadyApiXmlException {
-        File file = AzureApi.saveToTmpFile(portalUrl, api.id);
+    public static RestService importApiToProject(ConnectionSettings connectionSettings, ApiInfo api, WsdlProject project) throws IOException, ReadyApiXmlException {
+        File file = AzureApi.saveToTmpFile(connectionSettings, api.id);
         RestService rest = (RestService) project
                 .addNewInterface(ModelItemNamer.createName("Service", project.getInterfaceList()), RestServiceFactory.REST_TYPE);
         WadlImporter importer = new WadlImporter(rest);

@@ -8,7 +8,6 @@ import com.eviware.x.dialogs.XProgressDialog;
 import com.eviware.x.dialogs.XProgressMonitor;
 import com.smartbear.msazuresupport.Strings;
 
-import java.net.URL;
 import java.util.List;
 
 public class ApiListLoader implements Worker {
@@ -29,19 +28,19 @@ public class ApiListLoader implements Worker {
         }
     }
 
-    private URL url;
+    private AzureApi.ConnectionSettings connectionSettings;
     private XProgressDialog waitDialog;
     private String apiRetrievingError = null;
 
     Result result = new Result();
 
-    private ApiListLoader(URL apiPortalUrl, XProgressDialog waitDialog) {
-        this.url = apiPortalUrl;
+    private ApiListLoader(AzureApi.ConnectionSettings connectionSettings, XProgressDialog waitDialog) {
+        this.connectionSettings = connectionSettings;
         this.waitDialog = waitDialog;
     }
 
-    public static Result downloadList(URL developerPortalUrl) {
-        ApiListLoader worker = new ApiListLoader(developerPortalUrl, UISupport.getDialogs().createProgressDialog(Strings.Executing.QUERY_API_PROGRESS, 0, "", true));
+    public static Result downloadList(AzureApi.ConnectionSettings connection) {
+        ApiListLoader worker = new ApiListLoader(connection, UISupport.getDialogs().createProgressDialog(Strings.Executing.QUERY_API_PROGRESS, 0, "", true));
         try {
             worker.waitDialog.run(worker);
         } catch (Exception ex) {
@@ -54,7 +53,7 @@ public class ApiListLoader implements Worker {
     @Override
     public Object construct(XProgressMonitor xProgressMonitor) {
         try {
-            result.apis = AzureApi.getApiList(url);
+            result.apis = AzureApi.getApiList(connectionSettings);
         } catch (Throwable e) {
             SoapUI.logError(e);
             apiRetrievingError = e.getMessage();

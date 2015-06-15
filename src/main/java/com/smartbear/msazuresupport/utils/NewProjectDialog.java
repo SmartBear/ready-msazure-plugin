@@ -62,7 +62,7 @@ public class NewProjectDialog implements AutoCloseable {
                 if (portalUrl == null) {
                     return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.INVALID_URL_WARNING, formField)};
                 }
-                loaderResult = ApiListLoader.downloadList(portalUrl);
+                loaderResult = ApiListLoader.downloadList(new AzureApi.ConnectionSettings(portalUrl, ""));
                 if (StringUtils.hasContent(loaderResult.error)) {
                     return new ValidationMessage[]{new ValidationMessage(loaderResult.error, formField)};
                 }

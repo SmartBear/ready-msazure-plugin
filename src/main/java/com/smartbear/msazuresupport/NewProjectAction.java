@@ -9,6 +9,7 @@ import com.eviware.soapui.support.UISupport;
 import com.eviware.soapui.support.action.support.AbstractSoapUIAction;
 import com.smartbear.msazuresupport.utils.ApiImporter;
 import com.smartbear.msazuresupport.utils.ApiSelectorDialog;
+import com.smartbear.msazuresupport.utils.AzureApi;
 import com.smartbear.msazuresupport.utils.NewProjectDialog;
 import com.smartbear.msazuresupport.utils.SubscriptionKeyInputDialog;
 import com.smartbear.rapisupport.ServiceFactory;
@@ -61,7 +62,7 @@ public class NewProjectAction extends AbstractSoapUIAction<WorkspaceImpl> {
             return;
         }
 
-        List<RestService> services = ApiImporter.importServices(result.portalUrl, selResult.selectedAPIs, project);
+        List<RestService> services = ApiImporter.importServices(new AzureApi.ConnectionSettings(result.portalUrl, result.accessToken), selResult.selectedAPIs, project);
         ServiceFactory.Build(project, services, selResult.entities);
 
         if (services.size() > 0) {
