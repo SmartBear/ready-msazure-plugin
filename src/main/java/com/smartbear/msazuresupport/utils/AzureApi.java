@@ -31,6 +31,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -92,16 +93,8 @@ public final class AzureApi {
         }
 
         public ConnectionSettings(String url, String accessToken) {
-            this.Url = toURL(url);
+            this.Url = stringToUrl(url);
             this.accessToken = accessToken;
-        }
-
-        private URL toURL(String url) {
-            try {
-                return new URL(url);
-            } catch (MalformedURLException e) {
-                return null;
-            }
         }
     }
 
@@ -125,11 +118,23 @@ public final class AzureApi {
     public static List<ApiInfo> getApiList(ConnectionSettings connectionSettings) throws IOException {
         URL url = new URL(connectionSettings.Url, "/apis?api-version=2014-02-14-preview");
 
+        URLConnection connection = url.openConnection();
+        connection.setDoInput(true);
+        connection.setRequestProperty("Authorization", connectionSettings.accessToken);
+        connection.connect();
+
         Reader reader;
         try {
-            reader = new InputStreamReader(url.openStream());
+            reader = new InputStreamReader(connection.getInputStream());
         } catch (FileNotFoundException e) {
             throw new FileNotFoundException(Strings.AzureRestApi.UNAVAILABLE_API_ERROR);
+        } catch (IOException e) {
+            HttpURLConnection httpConnection = (HttpURLConnection)connection;
+            if (httpConnection != null && httpConnection.getResponseCode() == 401) {
+                throw new InvalidAuthorizationException(e);
+            } else {
+                throw e;
+            }
         }
 
         JsonObject jsonObject;
@@ -164,6 +169,7 @@ public final class AzureApi {
 
         connection.setDoInput(true);
         connection.setRequestProperty("Accept", "application/vnd.sun.wadl+xml");
+        connection.setRequestProperty("Authorization", connectionSettings.accessToken);
         connection.connect();
 
         StringBuilder sb = new StringBuilder();
@@ -172,6 +178,13 @@ public final class AzureApi {
             String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line).append(sep);
+            }
+        } catch (IOException e) {
+            HttpURLConnection httpConnection = (HttpURLConnection)connection;
+            if (httpConnection != null && httpConnection.getResponseCode() == 401) {
+                throw new InvalidAuthorizationException(e);
+            } else {
+                throw e;
             }
         }
 

@@ -15,6 +15,7 @@ public class ApiListLoader implements Worker {
     public static class Result {
         public List<AzureApi.ApiInfo> apis = null;
         public String error = null;
+        public boolean authorizationFailed = false;
         public boolean canceled = false;
 
         public void addError(String errorText) {
@@ -53,13 +54,13 @@ public class ApiListLoader implements Worker {
     @Override
     public Object construct(XProgressMonitor xProgressMonitor) {
         try {
+            result.authorizationFailed = false;
             result.apis = AzureApi.getApiList(connectionSettings);
+        } catch (InvalidAuthorizationException e) {
+            result.authorizationFailed = true;
+            handleError(e);
         } catch (Throwable e) {
-            SoapUI.logError(e);
-            apiRetrievingError = e.getMessage();
-            if (StringUtils.isNullOrEmpty(apiRetrievingError)) {
-                apiRetrievingError = e.getClass().getName();
-            }
+            handleError(e);
         }
         return null;
     }
@@ -84,5 +85,13 @@ public class ApiListLoader implements Worker {
         result.cancel();
         waitDialog.setVisible(false);
         return true;
+    }
+
+    private void handleError(Throwable e) {
+        SoapUI.logError(e);
+        apiRetrievingError = e.getMessage();
+        if (StringUtils.isNullOrEmpty(apiRetrievingError)) {
+            apiRetrievingError = e.getClass().getName();
+        }
     }
 }
