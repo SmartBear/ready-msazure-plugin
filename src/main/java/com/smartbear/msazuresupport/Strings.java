@@ -66,6 +66,6 @@ public final class Strings {
     public static final class AzureRestApi {
         public static final String UNAVAILABLE_API_ERROR = "No APIs available at this location. Please contact MS Azure support for assistance.";
         public static final String INVALID_RESPONSE_FORMAT_ERROR = "The list of APIs is not in the expected JSON format. Please contact MS Azure support for assistance.";
-        public static final String INVALID_SPECIFICATION_ERROR = "";
+        public static final String INVALID_SPECIFICATION_ERROR = "API specification list has incorrect format: no \"value\" entry has been found.\nPlease contact MS Azure support for assistance.";
     }
 }
