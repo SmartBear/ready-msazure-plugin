@@ -67,5 +67,8 @@ public final class Strings {
         public static final String UNAVAILABLE_API_ERROR = "No APIs available at this location. Please contact MS Azure support for assistance.";
         public static final String INVALID_RESPONSE_FORMAT_ERROR = "The list of APIs is not in the expected JSON format. Please contact MS Azure support for assistance.";
         public static final String INVALID_SPECIFICATION_ERROR = "API specification list has incorrect format: no \"value\" entry has been found.\nPlease contact MS Azure support for assistance.";
+        public static final String VALUE_ENTRY_ABSENT_ERROR = "Input JSON has incorrect format: no \"value\" entry has been found.";
+        public static final String UNAVAILABLE_DATA_ERROR = "No data available at the \"%s\" location. Please contact MS Azure support for assistance.";
+        public static final String UNEXPECTED_RESPONSE_FORMAT_ERROR = "Unexpected response format of the request to the \"%s\" location. Please contact MS Azure support for assistance.";
     }
 }

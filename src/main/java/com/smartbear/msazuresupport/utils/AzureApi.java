@@ -115,6 +115,36 @@ public final class AzureApi {
         }
     }
 
+    public static JsonObject getAllEntities(ConnectionSettings connectionSettings, String entity) throws IOException{
+        URL url = new URL(connectionSettings.Url, String.format("/%s?api-version=2014-02-14-preview", entity));
+
+        URLConnection connection = url.openConnection();
+        connection.setDoInput(true);
+        connection.setRequestProperty("Authorization", connectionSettings.accessToken);
+        connection.connect();
+
+        Reader reader;
+        try {
+            reader = new InputStreamReader(connection.getInputStream());
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException(String.format(Strings.AzureRestApi.UNAVAILABLE_DATA_ERROR, entity));
+        } catch (IOException e) {
+            HttpURLConnection httpConnection = (HttpURLConnection)connection;
+            if (httpConnection != null && httpConnection.getResponseCode() == 401) {
+                throw new InvalidAuthorizationException(e);
+            } else {
+                throw e;
+            }
+        }
+
+        try (javax.json.JsonReader jsonReader = javax.json.Json.createReader(reader)) {
+            return jsonReader.readObject();
+        } catch (JsonParsingException e) {
+            throw new IOException(String.format(Strings.AzureRestApi.UNEXPECTED_RESPONSE_FORMAT_ERROR, entity), e);
+        }
+    }
+
+
     public static List<ApiInfo> getApiList(ConnectionSettings connectionSettings) throws IOException {
         URL url = new URL(connectionSettings.Url, "/apis?api-version=2014-02-14-preview");
 
