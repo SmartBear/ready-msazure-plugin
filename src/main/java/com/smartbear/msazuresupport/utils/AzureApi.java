@@ -14,6 +14,9 @@ import com.eviware.soapui.support.types.StringToStringsMap;
 import com.eviware.soapui.support.xml.XmlUtils;
 import com.smartbear.msazuresupport.Strings;
 import com.smartbear.msazuresupport.entities.ApiInfo;
+import com.smartbear.msazuresupport.entities.Product;
+import com.smartbear.msazuresupport.entities.Subscription;
+import com.smartbear.msazuresupport.entities.User;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.w3c.dom.Document;
@@ -34,6 +37,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class AzureApi {
@@ -108,6 +112,48 @@ public final class AzureApi {
             @Override
             public ApiInfo create(JsonObject value) {
                 return new ApiInfo(value);
+            }
+        });
+    }
+
+    private static List<String> getProductApis(ConnectionSettings connectionSettings, String productId) {
+        try {
+            JsonObject obj = AzureApi.getAllEntities(connectionSettings, productId.substring(1) + "/apis");
+            return Helper.<String>extractList(obj, new Helper.EntityFactory<String>() {
+                @Override
+                public String create(JsonObject value) {
+                    return value.getString("id", "");
+                }
+            });
+        } catch (IOException e) {
+            SoapUI.logError(e);
+            return new ArrayList<>();
+        }
+    }
+
+    public static List<Subscription> getSubscriptionList(final ConnectionSettings connectionSettings) throws IOException {
+        JsonObject obj = AzureApi.getAllEntities(connectionSettings, "products");
+        final List<Product> products = Helper.extractList(obj, new Helper.EntityFactory<Product>() {
+            @Override
+            public Product create(JsonObject value) {
+                List<String> apis = AzureApi.getProductApis(connectionSettings, value.getString("id", ""));
+                return new Product(value, apis);
+            }
+        });
+
+        obj = AzureApi.getAllEntities(connectionSettings, "users");
+        final List<User> users = Helper.extractList(obj, new Helper.EntityFactory<User>() {
+            @Override
+            public User create(JsonObject value) {
+                return new User(value);
+            }
+        });
+
+        obj = AzureApi.getAllEntities(connectionSettings, "subscriptions");
+        return Helper.extractList(obj, new Helper.EntityFactory<Subscription>() {
+            @Override
+            public Subscription create(JsonObject value) {
+                return new Subscription(value, users, products);
             }
         });
     }
