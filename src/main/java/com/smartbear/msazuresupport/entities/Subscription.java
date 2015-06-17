@@ -40,6 +40,11 @@ public class Subscription {
         });
     }
 
+
+    public boolean associatedWithApi(String id) {
+        return product.apis.indexOf(id) >= 0;
+    }
+
     @Override
     public String toString() {
         return String.format("%s [%s]", user != null ? user.name : "unknown", product != null ? product.name : "unknown");
