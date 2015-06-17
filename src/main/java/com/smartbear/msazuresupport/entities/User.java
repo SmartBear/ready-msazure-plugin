@@ -6,6 +6,11 @@ public class User {
     public final String id;
     public final String name;
 
+    public User(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public User(JsonObject obj) {
         this.id = obj.getString("id", null);
         this.name = obj.getString("firstName", null);

@@ -12,6 +12,13 @@ public class Subscription {
     private final User user;
     private final Product product;
 
+    public Subscription(String id, String key, User user, Product product) {
+        this.id = id;
+        this.key = key;
+        this.user = user;
+        this.product = product;
+    }
+
     public Subscription(JsonObject obj, List<User> users, List<Product> products) {
         this.id = obj.getString("id", null);
         this.key = obj.getString("primaryKey", null);
