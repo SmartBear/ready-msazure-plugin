@@ -13,6 +13,7 @@ import com.eviware.soapui.support.StringUtils;
 import com.eviware.soapui.support.types.StringToStringsMap;
 import com.eviware.soapui.support.xml.XmlUtils;
 import com.smartbear.msazuresupport.Strings;
+import com.smartbear.msazuresupport.entities.ApiInfo;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.w3c.dom.Document;
@@ -20,9 +21,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 import javax.json.stream.JsonParsingException;
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,52 +34,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
 
 public final class AzureApi {
     private AzureApi() {
-    }
-
-    public static class ApiInfo {
-        public final String name;
-        public final String description;
-        public final String path;
-        public final String id;
-        private String subscriptionKey;
-
-        public ApiInfo(String name, String description, String path, String id) {
-            this.name = name;
-            this.description = description;
-            this.path = path;
-            this.id = id;
-            this.subscriptionKey = "";
-        }
-
-        public ApiInfo(JsonObject obj) {
-            this.name = obj.getString("name", null);
-            this.description = obj.getString("description", null);
-            this.path = obj.getString("path", null);
-            this.id = obj.getString("id", null);
-            this.subscriptionKey = "";
-        }
-
-        public Boolean isValid() {
-            return StringUtils.hasContent(name) && StringUtils.hasContent(path) && StringUtils.hasContent(id);
-        }
-
-        @Override
-        public String toString() {
-            return String.format("name = %s, path = %s, id = %s", name, path, id);
-        }
-
-        public String getSubscriptionKey() {
-            return subscriptionKey;
-        }
-
-        public void setSubscriptionKey(String subscriptionKey) {
-            this.subscriptionKey = subscriptionKey;
-        }
     }
 
     public static class ConnectionSettings {
@@ -146,51 +103,13 @@ public final class AzureApi {
 
 
     public static List<ApiInfo> getApiList(ConnectionSettings connectionSettings) throws IOException {
-        URL url = new URL(connectionSettings.Url, "/apis?api-version=2014-02-14-preview");
-
-        URLConnection connection = url.openConnection();
-        connection.setDoInput(true);
-        connection.setRequestProperty("Authorization", connectionSettings.accessToken);
-        connection.connect();
-
-        Reader reader;
-        try {
-            reader = new InputStreamReader(connection.getInputStream());
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException(Strings.AzureRestApi.UNAVAILABLE_API_ERROR);
-        } catch (IOException e) {
-            HttpURLConnection httpConnection = (HttpURLConnection)connection;
-            if (httpConnection != null && httpConnection.getResponseCode() == 401) {
-                throw new InvalidAuthorizationException(e);
-            } else {
-                throw e;
+        JsonObject obj = AzureApi.getAllEntities(connectionSettings, "apis");
+        return Helper.extractList(obj, new Helper.EntityFactory<ApiInfo>() {
+            @Override
+            public ApiInfo create(JsonObject value) {
+                return new ApiInfo(value);
             }
-        }
-
-        JsonObject jsonObject;
-        try (javax.json.JsonReader jsonReader = javax.json.Json.createReader(reader)) {
-            jsonObject = jsonReader.readObject();
-        } catch (JsonParsingException e) {
-            throw new IOException(Strings.AzureRestApi.INVALID_RESPONSE_FORMAT_ERROR, e);
-        }
-
-        JsonValue apiList = jsonObject.get("value");
-        if (apiList == null || !(apiList instanceof JsonArray)) {
-            throw new IOException(Strings.AzureRestApi.INVALID_SPECIFICATION_ERROR);
-        }
-
-        JsonArray apis = (JsonArray) apiList;
-        ArrayList<ApiInfo> result = new ArrayList<>();
-        for (javax.json.JsonValue it : apis) {
-            if (it instanceof JsonObject) {
-                ApiInfo api = new ApiInfo((JsonObject) it);
-                if (api.isValid()) {
-                    result.add(api);
-                }
-            }
-        }
-
-        return result;
+        });
     }
 
     public static File saveToTmpFile(ConnectionSettings connectionSettings, String apiID) throws IOException {

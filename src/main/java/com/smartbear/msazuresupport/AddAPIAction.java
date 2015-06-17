@@ -7,6 +7,7 @@ import com.eviware.soapui.support.StringUtils;
 import com.eviware.soapui.support.UISupport;
 import com.eviware.soapui.support.action.support.AbstractSoapUIAction;
 import com.smartbear.ActionGroups;
+import com.smartbear.msazuresupport.entities.ApiInfo;
 import com.smartbear.msazuresupport.utils.ApiImporter;
 import com.smartbear.msazuresupport.utils.ApiListLoader;
 import com.smartbear.msazuresupport.utils.ApiSelectorDialog;
@@ -53,9 +54,9 @@ public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
 
     private static class AzureApiInfo {
         public final URL portalUrl;
-        public final List<AzureApi.ApiInfo> apis;
+        public final List<ApiInfo> apis;
 
-        public AzureApiInfo(URL portalUrl, List<AzureApi.ApiInfo> apis) {
+        public AzureApiInfo(URL portalUrl, List<ApiInfo> apis) {
             this.portalUrl = portalUrl;
             this.apis = new ArrayList<>(apis);
         }

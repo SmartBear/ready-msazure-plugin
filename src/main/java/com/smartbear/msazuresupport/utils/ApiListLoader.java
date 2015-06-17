@@ -7,13 +7,14 @@ import com.eviware.x.dialogs.Worker;
 import com.eviware.x.dialogs.XProgressDialog;
 import com.eviware.x.dialogs.XProgressMonitor;
 import com.smartbear.msazuresupport.Strings;
+import com.smartbear.msazuresupport.entities.ApiInfo;
 
 import java.util.List;
 
 public class ApiListLoader implements Worker {
 
     public static class Result {
-        public List<AzureApi.ApiInfo> apis = null;
+        public List<ApiInfo> apis = null;
         public String error = null;
         public boolean authorizationFailed = false;
         public boolean canceled = false;

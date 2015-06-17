@@ -10,6 +10,7 @@ import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AForm;
 import com.smartbear.msazuresupport.Strings;
+import com.smartbear.msazuresupport.entities.ApiInfo;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,9 +21,9 @@ public class NewProjectDialog implements AutoCloseable {
         public final String projectName;
         public final String portalUrl;
         public final String accessToken;
-        public final List<AzureApi.ApiInfo> apis;
+        public final List<ApiInfo> apis;
 
-        public Result(String projectName, String portalUrl, String accessToken, List<AzureApi.ApiInfo> apis) {
+        public Result(String projectName, String portalUrl, String accessToken, List<ApiInfo> apis) {
             this.projectName = projectName;
             this.portalUrl = portalUrl;
             this.accessToken = accessToken;

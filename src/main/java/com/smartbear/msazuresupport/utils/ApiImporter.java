@@ -8,6 +8,7 @@ import com.eviware.x.dialogs.Worker;
 import com.eviware.x.dialogs.XProgressDialog;
 import com.eviware.x.dialogs.XProgressMonitor;
 import com.smartbear.msazuresupport.Strings;
+import com.smartbear.msazuresupport.entities.ApiInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,20 +17,20 @@ public final class ApiImporter implements Worker {
     private Boolean canceled = false;
     private final XProgressDialog waitDialog;
     private final AzureApi.ConnectionSettings connectionSettings;
-    private final List<AzureApi.ApiInfo> apis;
+    private final List<ApiInfo> apis;
     private final WsdlProject project;
     private final ArrayList<RestService> addedServices = new ArrayList<>();
     private final StringBuilder errors = new StringBuilder();
 
 
-    private ApiImporter(XProgressDialog waitDialog, AzureApi.ConnectionSettings connectionSettings, List<AzureApi.ApiInfo> apis, WsdlProject project) {
+    private ApiImporter(XProgressDialog waitDialog, AzureApi.ConnectionSettings connectionSettings, List<ApiInfo> apis, WsdlProject project) {
         this.waitDialog = waitDialog;
         this.connectionSettings = connectionSettings;
         this.apis = apis;
         this.project = project;
     }
 
-    public static List<RestService> importServices(AzureApi.ConnectionSettings connectionSettings, List<AzureApi.ApiInfo> apis, WsdlProject project) {
+    public static List<RestService> importServices(AzureApi.ConnectionSettings connectionSettings, List<ApiInfo> apis, WsdlProject project) {
         ApiImporter worker = new ApiImporter(UISupport.getDialogs().createProgressDialog(Strings.Executing.IMPORT_PROGRESS, 100, "", true), connectionSettings, apis, project);
         try {
             worker.waitDialog.run(worker);
@@ -43,7 +44,7 @@ public final class ApiImporter implements Worker {
 
     @Override
     public Object construct(XProgressMonitor xProgressMonitor) {
-        for (AzureApi.ApiInfo api : apis) {
+        for (ApiInfo api : apis) {
             try {
                 RestService service = AzureApi.importApiToProject(connectionSettings, api, project);
                 addedServices.add(service);

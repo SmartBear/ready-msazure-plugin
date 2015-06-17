@@ -9,6 +9,7 @@ import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AForm;
 import com.smartbear.msazuresupport.Strings;
+import com.smartbear.msazuresupport.entities.ApiInfo;
 import com.smartbear.rapisupport.Service;
 
 import javax.swing.AbstractListModel;
@@ -24,11 +25,11 @@ import java.util.List;
 import java.util.Set;
 
 public class ApiSelectorDialog implements AutoCloseable {
-    private final List<AzureApi.ApiInfo> apis;
+    private final List<ApiInfo> apis;
     private final XFormDialog dialog;
     private final JList apiListBox;
 
-    public ApiSelectorDialog(List<AzureApi.ApiInfo> apiList) {
+    public ApiSelectorDialog(List<ApiInfo> apiList) {
         apis = apiList;
 
         dialog = ADialogBuilder.buildDialog(SelectAPIFromMsAzureForm.class);
@@ -106,7 +107,7 @@ public class ApiSelectorDialog implements AutoCloseable {
     }
 
     public class Result {
-        public final List<AzureApi.ApiInfo> selectedAPIs = new ArrayList<>();
+        public final List<ApiInfo> selectedAPIs = new ArrayList<>();
         public final Set<Service> entities = EnumSet.noneOf(Service.class);
 
         public Result() {
