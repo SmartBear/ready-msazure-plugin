@@ -5,6 +5,7 @@ import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AForm;
 import com.smartbear.msazuresupport.entities.ApiInfo;
+import com.smartbear.msazuresupport.entities.Subscription;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -14,6 +15,7 @@ import java.util.List;
 
 public class SubscriptionKeyInputDialog implements AutoCloseable {
     private final List<ApiInfo> apis;
+    private final List<Subscription> subscriptions;
     private final XFormDialog dialog;
     private JTable apiTable;
 
@@ -79,8 +81,9 @@ public class SubscriptionKeyInputDialog implements AutoCloseable {
         }
     }
 
-    public SubscriptionKeyInputDialog(List<ApiInfo> apis) {
+    public SubscriptionKeyInputDialog(List<ApiInfo> apis, List<Subscription> subscriptions) {
         this.apis = apis;
+        this.subscriptions = subscriptions;
         dialog = ADialogBuilder.buildDialog(Form.class);
 
         apiTable = new JTable(new ApiInfoTableModel());

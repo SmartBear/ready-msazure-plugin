@@ -7,11 +7,13 @@ import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.plugins.auto.PluginImportMethod;
 import com.eviware.soapui.support.UISupport;
 import com.eviware.soapui.support.action.support.AbstractSoapUIAction;
+import com.smartbear.msazuresupport.entities.Subscription;
 import com.smartbear.msazuresupport.utils.ApiImporter;
 import com.smartbear.msazuresupport.utils.ApiSelectorDialog;
 import com.smartbear.msazuresupport.utils.AzureApi;
 import com.smartbear.msazuresupport.utils.NewProjectDialog;
 import com.smartbear.msazuresupport.utils.SubscriptionKeyInputDialog;
+import com.smartbear.msazuresupport.utils.SubscriptionsLoader;
 import com.smartbear.rapisupport.ServiceFactory;
 
 import java.util.List;
@@ -43,7 +45,10 @@ public class NewProjectAction extends AbstractSoapUIAction<WorkspaceImpl> {
             return;
         }
 
-        try (SubscriptionKeyInputDialog dlg = new SubscriptionKeyInputDialog(selResult.selectedAPIs)) {
+        AzureApi.ConnectionSettings connectionSettings = new AzureApi.ConnectionSettings(result.portalUrl, result.accessToken);
+        List<Subscription> subscriptions = SubscriptionsLoader.downloadSubscriptions(connectionSettings);
+
+        try (SubscriptionKeyInputDialog dlg = new SubscriptionKeyInputDialog(selResult.selectedAPIs, subscriptions)) {
             if (!dlg.show()) {
                 return;
             }
@@ -62,7 +67,7 @@ public class NewProjectAction extends AbstractSoapUIAction<WorkspaceImpl> {
             return;
         }
 
-        List<RestService> services = ApiImporter.importServices(new AzureApi.ConnectionSettings(result.portalUrl, result.accessToken), selResult.selectedAPIs, project);
+        List<RestService> services = ApiImporter.importServices(connectionSettings, selResult.selectedAPIs, project);
         ServiceFactory.Build(project, services, selResult.entities);
 
         if (services.size() > 0) {
