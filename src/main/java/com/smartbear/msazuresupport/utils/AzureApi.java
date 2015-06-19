@@ -226,7 +226,9 @@ public final class AzureApi {
         if (!project.hasProperty(customPropertyName)) {
             project.addProperty(customPropertyName);
         }
-        project.getProperty(customPropertyName).setValue(api.getSubscriptionKey());
+
+        Subscription subscription = api.getSubscription();
+        project.getProperty(customPropertyName).setValue(subscription != null ? subscription.key : "");
 
         for (RestResource resource : rest.getAllOperations()) {
             for (int i = 0; i < resource.getRequestCount(); i++) {

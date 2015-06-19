@@ -7,10 +7,17 @@ import com.eviware.x.form.support.AForm;
 import com.smartbear.msazuresupport.entities.ApiInfo;
 import com.smartbear.msazuresupport.entities.Subscription;
 
+import javax.swing.AbstractCellEditor;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+import java.awt.Component;
 import java.util.List;
 
 public class SubscriptionKeyInputDialog implements AutoCloseable {
@@ -44,7 +51,13 @@ public class SubscriptionKeyInputDialog implements AutoCloseable {
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            return String.class;
+            if (columnIndex == 0) {
+                return String.class;
+            } else if (columnIndex == 1) {
+                return Subscription.class;
+            } else {
+                return String.class;
+            }
         }
 
         @Override
@@ -57,7 +70,7 @@ public class SubscriptionKeyInputDialog implements AutoCloseable {
             if (columnIndex == 0) {
                 return apis.get(rowIndex).name;
             } else if (columnIndex == 1) {
-                return apis.get(rowIndex).getSubscriptionKey();
+                return apis.get(rowIndex).getSubscription();
             } else {
                 return null;
             }
@@ -65,8 +78,8 @@ public class SubscriptionKeyInputDialog implements AutoCloseable {
 
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            if (columnIndex == 1) {
-                apis.get(rowIndex).setSubscriptionKey(aValue.toString());
+            if (columnIndex == 1 && aValue instanceof Subscription) {
+                apis.get(rowIndex).setSubscription((Subscription) aValue);
             }
         }
 
@@ -81,17 +94,66 @@ public class SubscriptionKeyInputDialog implements AutoCloseable {
         }
     }
 
+    public class SubscriptionComboBoxCellEditor extends AbstractCellEditor implements TableCellEditor {
+        private final JComboBox comboBox;
+        private final List<Subscription> items;
+
+        SubscriptionComboBoxCellEditor(JComboBox comboBox, List<Subscription> items) {
+            this.comboBox = comboBox;
+            this.items = items;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            fireEditingStopped();
+            return true;
+        }
+
+        public Object getCellEditorValue() {
+            return comboBox.getSelectedItem();
+        }
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            comboBox.removeAllItems();
+            String id = apis.get(row).id;
+            for (Subscription subscription : items) {
+                if (subscription.associatedWithApi(id)) {
+                    comboBox.addItem(subscription);
+                }
+            }
+            comboBox.setSelectedItem(value);
+
+            return comboBox;
+        }
+    }
+
     public SubscriptionKeyInputDialog(List<ApiInfo> apis, List<Subscription> subscriptions) {
         this.apis = apis;
         this.subscriptions = subscriptions;
         dialog = ADialogBuilder.buildDialog(Form.class);
 
         apiTable = new JTable(new ApiInfoTableModel());
+
+        ListSelectionModel selectionModel = apiTable.getSelectionModel();
+        selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        final JComboBox comboBox = new JComboBox(new DefaultComboBoxModel());
+
+        TableColumn col = apiTable.getColumnModel().getColumn(1);
+        col.setCellEditor(new SubscriptionComboBoxCellEditor(comboBox, this.subscriptions));
+
+        apiTable.setRowHeight((int) comboBox.getPreferredSize().getHeight());
+
         dialog.getFormField(Form.NAME).setProperty("component", new JScrollPane(apiTable));
     }
 
     public boolean show() {
-        return dialog.show();
+        boolean res = dialog.show();
+        TableCellEditor editor = apiTable.getCellEditor();
+        if (editor != null) {
+            editor.stopCellEditing();
+        }
+        return res;
     }
 
     @Override
