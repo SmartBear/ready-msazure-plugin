@@ -38,6 +38,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public final class AzureApi {
@@ -131,6 +133,15 @@ public final class AzureApi {
         }
     }
 
+    private static Helper.EntityFactory<Subscription> getSubscriptionFactory(final Subscription.KeyKind keyKind, final List<User> users, final List<Product> products) {
+        return new Helper.EntityFactory<Subscription>() {
+            @Override
+            public Subscription create(JsonObject value) {
+                return new Subscription(value, keyKind, users, products);
+            }
+        };
+    }
+
     public static List<Subscription> getSubscriptionList(final ConnectionSettings connectionSettings) throws IOException {
         JsonObject obj = AzureApi.getAllEntities(connectionSettings, "products");
         final List<Product> products = Helper.extractList(obj, new Helper.EntityFactory<Product>() {
@@ -150,12 +161,18 @@ public final class AzureApi {
         });
 
         obj = AzureApi.getAllEntities(connectionSettings, "subscriptions");
-        return Helper.extractList(obj, new Helper.EntityFactory<Subscription>() {
+        List<Subscription> primaries = Helper.extractList(obj, getSubscriptionFactory(Subscription.KeyKind.PRIMARY, users, products));
+        List<Subscription> secondaries = Helper.extractList(obj, getSubscriptionFactory(Subscription.KeyKind.SECONDARY, users, products));
+        ArrayList<Subscription> result = new ArrayList<>();
+        result.addAll(primaries);
+        result.addAll(secondaries);
+        Collections.sort(result, new Comparator<Subscription>() {
             @Override
-            public Subscription create(JsonObject value) {
-                return new Subscription(value, users, products);
+            public int compare(Subscription o1, Subscription o2) {
+                return o1.toString().compareTo(o2.toString());
             }
         });
+        return result;
     }
 
     public static File saveToTmpFile(ConnectionSettings connectionSettings, String apiID) throws IOException {

@@ -6,22 +6,47 @@ import javax.json.JsonObject;
 import java.util.List;
 
 public class Subscription {
+    public enum KeyKind {
+        PRIMARY,
+        SECONDARY;
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case PRIMARY: return "Primary";
+                case SECONDARY: return "Secondary";
+            }
+            throw new AssertionError("Unexpected enumeration: " + this);
+        }
+
+        public String getKeyName() {
+            switch (this) {
+                case PRIMARY: return "primaryKey";
+                case SECONDARY: return "secondaryKey";
+            }
+            throw new AssertionError("Unexpected enumeration: " + this);
+        }
+    }
+
     public final String id;
     public final String key;
 
+    private final KeyKind keyKind;
     private final User user;
     private final Product product;
 
-    public Subscription(String id, String key, User user, Product product) {
+    public Subscription(String id, String key, KeyKind keyKind, User user, Product product) {
         this.id = id;
         this.key = key;
+        this.keyKind = keyKind;
         this.user = user;
         this.product = product;
     }
 
-    public Subscription(JsonObject obj, List<User> users, List<Product> products) {
+    public Subscription(JsonObject obj, KeyKind keyKind, List<User> users, List<Product> products) {
         this.id = obj.getString("id", null);
-        this.key = obj.getString("primaryKey", null);
+        this.keyKind = keyKind;
+        this.key = obj.getString(this.keyKind.getKeyName(), null);
 
         final String userId = obj.getString("userId", null);
         final String productId = obj.getString("productId", null);
@@ -47,6 +72,6 @@ public class Subscription {
 
     @Override
     public String toString() {
-        return String.format("%s [%s]", user != null ? user.name : "unknown", product != null ? product.name : "unknown");
+        return String.format("%s [%s] [%s]", user != null ? user.name : "unknown", product != null ? product.name : "unknown", keyKind);
     }
 }
