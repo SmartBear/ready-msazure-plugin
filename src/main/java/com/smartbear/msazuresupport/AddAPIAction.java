@@ -9,6 +9,7 @@ import com.eviware.soapui.support.action.support.AbstractSoapUIAction;
 import com.smartbear.ActionGroups;
 import com.smartbear.msazuresupport.entities.ApiInfo;
 import com.smartbear.msazuresupport.entities.Subscription;
+import com.smartbear.msazuresupport.utils.AddApiDialog;
 import com.smartbear.msazuresupport.utils.ApiImporter;
 import com.smartbear.msazuresupport.utils.ApiListLoader;
 import com.smartbear.msazuresupport.utils.ApiSelectorDialog;
@@ -40,8 +41,7 @@ public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
         }
 
         if (selResult != null) {
-            //TODO: set valid accessToken
-            AzureApi.ConnectionSettings connectionSettings = new AzureApi.ConnectionSettings(info.portalUrl, "");
+            AzureApi.ConnectionSettings connectionSettings = new AzureApi.ConnectionSettings(info.portalUrl, info.accessToken);
             List<Subscription> subscriptions = SubscriptionsLoader.downloadSubscriptions(connectionSettings);
 
             try (SubscriptionKeyInputDialog dlg = new SubscriptionKeyInputDialog(selResult.selectedAPIs, subscriptions)) {
@@ -60,30 +60,27 @@ public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
 
     private static class AzureApiInfo {
         public final URL portalUrl;
+        public final String accessToken;
         public final List<ApiInfo> apis;
 
-        public AzureApiInfo(URL portalUrl, List<ApiInfo> apis) {
+        public AzureApiInfo(URL portalUrl, String accessToken, List<ApiInfo> apis) {
             this.portalUrl = portalUrl;
+            this.accessToken = accessToken;
             this.apis = new ArrayList<>(apis);
         }
     }
 
     private AzureApiInfo getAvailableApiList() {
-        String urlString = null;
         while (true) {
-            urlString = UISupport.getDialogs().prompt(Strings.AddApiAction.PROMPT_API_DIALOG_DESCRIPTION, Strings.AddApiAction.PROMPT_API_DIALOG_CAPTION, urlString);
-            if (urlString == null) {
+            AddApiDialog.Result dialogResult = null;
+            try (AddApiDialog dlg = new AddApiDialog()) {
+                dialogResult = dlg.show();
+            }
+            if (dialogResult == null) {
                 return null;
             }
 
-            URL portalUrl = AzureApi.stringToUrl(urlString);
-            if (portalUrl == null) {
-                UISupport.showErrorMessage("Invalid URL");
-                continue;
-            }
-
-            //TODO: set valid accessToken
-            ApiListLoader.Result loaderResult = ApiListLoader.downloadList(new AzureApi.ConnectionSettings(portalUrl, ""));
+            ApiListLoader.Result loaderResult = ApiListLoader.downloadList(new AzureApi.ConnectionSettings(dialogResult.portalUrl, dialogResult.accessToken));
             if (loaderResult.canceled) {
                 return null;
             }
@@ -94,7 +91,7 @@ public class AddAPIAction extends AbstractSoapUIAction<WsdlProject> {
             }
 
             if (loaderResult.apis != null) {
-                return new AzureApiInfo(portalUrl, loaderResult.apis);
+                return new AzureApiInfo(AzureApi.stringToUrl(dialogResult.portalUrl), dialogResult.accessToken, loaderResult.apis);
             }
         }
     }
