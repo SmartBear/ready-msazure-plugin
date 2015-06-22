@@ -9,24 +9,29 @@ import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AForm;
 import com.smartbear.msazuresupport.Strings;
+import com.smartbear.msazuresupport.entities.ApiInfo;
 
 import java.net.URL;
+import java.util.List;
 
 public class AddApiDialog implements AutoCloseable {
 
     public static class Result {
         public final String portalUrl;
         public final String accessToken;
+        public final List<ApiInfo> apis;
 
-        public Result(String portalUrl, String accessToken) {
+        public Result(String portalUrl, String accessToken, List<ApiInfo> apis) {
             this.portalUrl = portalUrl;
             this.accessToken = accessToken;
+            this.apis = apis;
         }
     }
 
     private final XFormDialog dialog;
     private final XFormField portalUrlField;
     private final XFormField accessTokenField;
+    private ApiListLoader.Result loaderResult = null;
 
     public AddApiDialog() {
         dialog = ADialogBuilder.buildDialog(Form.class);
@@ -46,6 +51,11 @@ public class AddApiDialog implements AutoCloseable {
                     return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.INVALID_URL_WARNING, formField)};
                 }
 
+                ValidationMessage[] msg = downloadApiList();
+                if (msg.length > 0) {
+                    return msg;
+                }
+
                 return new ValidationMessage[0];
             }
         });
@@ -56,6 +66,12 @@ public class AddApiDialog implements AutoCloseable {
                 if (StringUtils.isNullOrEmpty(formField.getValue())) {
                     return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.EMPTY_ACCESS_TOKEN_WARNING, formField)};
                 }
+
+                ValidationMessage[] msg = downloadApiList();
+                if (msg.length > 0) {
+                    return msg;
+                }
+
                 return new ValidationMessage[0];
             }
         });
@@ -63,8 +79,22 @@ public class AddApiDialog implements AutoCloseable {
 
     public Result show() {
         return dialog.show() ?
-                new Result(AzureApi.stringToUrl(portalUrlField.getValue()).toString(), accessTokenField.getValue()) :
+                new Result(AzureApi.stringToUrl(portalUrlField.getValue()).toString(), accessTokenField.getValue(), loaderResult.apis) :
                 null;
+    }
+
+    private ValidationMessage[] downloadApiList() {
+        String portalUrl = portalUrlField.getValue();
+        String accessToken = accessTokenField.getValue();
+        if (!StringUtils.isNullOrEmpty(portalUrl) && !StringUtils.isNullOrEmpty(accessToken)) {
+            loaderResult = ApiListLoader.downloadList(new AzureApi.ConnectionSettings(portalUrl, accessToken));
+            if (loaderResult.authorizationFailed) {
+                return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.INVALID_ACCESS_TOKEN_WARNING, accessTokenField)};
+            } else if (StringUtils.hasContent(loaderResult.error)) {
+                return new ValidationMessage[]{new ValidationMessage(loaderResult.error, portalUrlField)};
+            }
+        }
+        return new ValidationMessage[0];
     }
 
     @Override
