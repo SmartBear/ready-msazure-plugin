@@ -78,8 +78,8 @@ public final class AzureApi {
         }
     }
 
-    public static JsonObject getAllEntities(ConnectionSettings connectionSettings, String entity) throws IOException{
-        URL url = new URL(connectionSettings.Url, String.format("/%s?api-version=2014-02-14-preview", entity));
+    private static JsonObject performRequest(ConnectionSettings connectionSettings, String location) throws IOException{
+        URL url = new URL(connectionSettings.Url, String.format("/%s?api-version=2014-02-14-preview", location));
 
         URLConnection connection = url.openConnection();
         connection.setDoInput(true);
@@ -90,7 +90,7 @@ public final class AzureApi {
         try {
             reader = new InputStreamReader(connection.getInputStream());
         } catch (FileNotFoundException e) {
-            throw new FileNotFoundException(String.format(Strings.AzureRestApi.UNAVAILABLE_DATA_ERROR, entity));
+            throw new FileNotFoundException(String.format(Strings.AzureRestApi.UNAVAILABLE_DATA_ERROR, location));
         } catch (IOException e) {
             HttpURLConnection httpConnection = (HttpURLConnection)connection;
             if (httpConnection != null && httpConnection.getResponseCode() == 401) {
@@ -103,13 +103,13 @@ public final class AzureApi {
         try (javax.json.JsonReader jsonReader = javax.json.Json.createReader(reader)) {
             return jsonReader.readObject();
         } catch (JsonParsingException e) {
-            throw new IOException(String.format(Strings.AzureRestApi.UNEXPECTED_RESPONSE_FORMAT_ERROR, entity), e);
+            throw new IOException(String.format(Strings.AzureRestApi.UNEXPECTED_RESPONSE_FORMAT_ERROR, location), e);
         }
     }
 
 
     public static List<ApiInfo> getApiList(ConnectionSettings connectionSettings) throws IOException {
-        JsonObject obj = AzureApi.getAllEntities(connectionSettings, "apis");
+        JsonObject obj = AzureApi.performRequest(connectionSettings, "apis");
         return Helper.extractList(obj, new Helper.EntityFactory<ApiInfo>() {
             @Override
             public ApiInfo create(JsonObject value) {
@@ -120,7 +120,7 @@ public final class AzureApi {
 
     private static List<String> getProductApis(ConnectionSettings connectionSettings, String productId) {
         try {
-            JsonObject obj = AzureApi.getAllEntities(connectionSettings, productId.substring(1) + "/apis");
+            JsonObject obj = AzureApi.performRequest(connectionSettings, productId.substring(1) + "/apis");
             return Helper.<String>extractList(obj, new Helper.EntityFactory<String>() {
                 @Override
                 public String create(JsonObject value) {
@@ -143,7 +143,7 @@ public final class AzureApi {
     }
 
     public static List<Subscription> getSubscriptionList(final ConnectionSettings connectionSettings) throws IOException {
-        JsonObject obj = AzureApi.getAllEntities(connectionSettings, "products");
+        JsonObject obj = AzureApi.performRequest(connectionSettings, "products");
         final List<Product> products = Helper.extractList(obj, new Helper.EntityFactory<Product>() {
             @Override
             public Product create(JsonObject value) {
@@ -152,7 +152,7 @@ public final class AzureApi {
             }
         });
 
-        obj = AzureApi.getAllEntities(connectionSettings, "users");
+        obj = AzureApi.performRequest(connectionSettings, "users");
         final List<User> users = Helper.extractList(obj, new Helper.EntityFactory<User>() {
             @Override
             public User create(JsonObject value) {
@@ -160,7 +160,7 @@ public final class AzureApi {
             }
         });
 
-        obj = AzureApi.getAllEntities(connectionSettings, "subscriptions");
+        obj = AzureApi.performRequest(connectionSettings, "subscriptions");
         List<Subscription> primaries = Helper.extractList(obj, getSubscriptionFactory(Subscription.KeyKind.PRIMARY, users, products));
         List<Subscription> secondaries = Helper.extractList(obj, getSubscriptionFactory(Subscription.KeyKind.SECONDARY, users, products));
         ArrayList<Subscription> result = new ArrayList<>();
