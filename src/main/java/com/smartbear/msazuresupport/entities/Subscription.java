@@ -28,12 +28,15 @@ public class Subscription {
         }
     }
 
+    private final static String ACTIVE_STATE = "active";
+
     public final String id;
     public final String key;
 
     private final KeyKind keyKind;
     private final User user;
     private final Product product;
+    private final String state;
 
     public Subscription(String id, String key, KeyKind keyKind, User user, Product product) {
         this.id = id;
@@ -41,12 +44,14 @@ public class Subscription {
         this.keyKind = keyKind;
         this.user = user;
         this.product = product;
+        this.state = ACTIVE_STATE;
     }
 
     public Subscription(JsonObject obj, KeyKind keyKind, List<User> users, List<Product> products) {
         this.id = obj.getString("id", null);
         this.keyKind = keyKind;
         this.key = obj.getString(this.keyKind.getKeyName(), null);
+        this.state = obj.getString("state", ACTIVE_STATE);
 
         final String userId = obj.getString("userId", null);
         final String productId = obj.getString("productId", null);
@@ -67,7 +72,7 @@ public class Subscription {
 
 
     public boolean associatedWithApi(String id) {
-        return product.apis.indexOf(id) >= 0;
+        return this.state.equalsIgnoreCase(ACTIVE_STATE) && product.apis.indexOf(id) >= 0;
     }
 
     @Override
