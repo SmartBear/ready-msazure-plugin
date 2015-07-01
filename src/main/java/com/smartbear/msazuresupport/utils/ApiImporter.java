@@ -1,6 +1,7 @@
 package com.smartbear.msazuresupport.utils;
 
 import com.eviware.soapui.SoapUI;
+import com.eviware.soapui.impl.rest.RestResource;
 import com.eviware.soapui.impl.rest.RestService;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.support.UISupport;
@@ -47,6 +48,10 @@ public final class ApiImporter implements Worker {
         for (ApiInfo api : apis) {
             try {
                 RestService service = AzureApi.importApiToProject(connectionSettings, api, project);
+                int i = 0;
+                for (RestResource resource: service.getAllResources()) {
+                    resource.setName(String.format("Resource %d", i++));
+                }
                 addedServices.add(service);
             } catch (Throwable e) {
                 SoapUI.logError(e);
