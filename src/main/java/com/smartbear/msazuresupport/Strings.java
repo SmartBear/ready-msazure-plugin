@@ -53,6 +53,14 @@ public final class Strings {
         public static final String NOTHING_SELECTED_WARNING = "Please select at least one API to import";
     }
 
+    public static final class SubscriptionKeyDialog {
+        public static final String CAPTION = "Enter Subscription keys for the selected APIs";
+        public static final String DESCRIPTION = "Please enter the Subscription keys for the selected to import APIs";
+        public static final String REMARK = "A Subscription key can be set or changed later on the 'Custom properties' tab of the project";
+        public static final String NAME_COLUMN = "API";
+        public static final String KEY_COLUMN = "Subscription key";
+    }
+
     public static final class Executing {
         public static final String QUERY_API_PROGRESS = "Getting APIs list...";
         public static final String QUERY_API_ERROR = "Unable to get API list from the specified Azure API Management service instance due to the following error:\n";

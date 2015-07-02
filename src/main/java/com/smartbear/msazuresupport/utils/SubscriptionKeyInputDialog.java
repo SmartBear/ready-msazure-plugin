@@ -4,6 +4,7 @@ import com.eviware.x.form.XFormDialog;
 import com.eviware.x.form.support.ADialogBuilder;
 import com.eviware.x.form.support.AField;
 import com.eviware.x.form.support.AForm;
+import com.smartbear.msazuresupport.Strings;
 import com.smartbear.msazuresupport.entities.ApiInfo;
 import com.smartbear.msazuresupport.entities.Subscription;
 
@@ -41,9 +42,9 @@ public class SubscriptionKeyInputDialog implements AutoCloseable {
         @Override
         public String getColumnName(int columnIndex) {
             if (columnIndex == 0) {
-                return "API Name";
+                return Strings.SubscriptionKeyDialog.NAME_COLUMN;
             } else if (columnIndex == 1) {
-                return "Subscription Key";
+                return Strings.SubscriptionKeyDialog.KEY_COLUMN;
             } else {
                 return null;
             }
@@ -161,12 +162,12 @@ public class SubscriptionKeyInputDialog implements AutoCloseable {
         dialog.release();
     }
 
-    @AForm(name = "Enter Subscription Key(s) for the selected API", description = "Please enter the Subscription Key for selected to import API.")
+    @AForm(name = Strings.SubscriptionKeyDialog.CAPTION, description = Strings.SubscriptionKeyDialog.DESCRIPTION)
     public interface Form {
         @AField(name = "###Name", description = "", type = AField.AFieldType.COMPONENT)
         public final static String NAME = "###Name";
 
-        @AField(name = "###Comment", description = "You can set the Subscription Key value later at the 'Custom properties' tab of the project.", type = AField.AFieldType.LABEL)
+        @AField(name = "###Comment", description = Strings.SubscriptionKeyDialog.REMARK, type = AField.AFieldType.LABEL)
         public final static String COMMENT = "###Comment";
     }
 }
