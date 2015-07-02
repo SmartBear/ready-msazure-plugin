@@ -5,71 +5,71 @@ public final class Strings {
     }
 
     public static final class PluginInfo {
-        public static final String NAME = "MS Azure Plugin";
-        public static final String DESCRIPTION = "Adds actions to import APIs from MS Azure hosted developer portals";
+        public static final String NAME = "Microsoft Azure API Management Plugin";
+        public static final String DESCRIPTION = "Adds actions for importing APIs from Azure API Management";
     }
 
     public static final class AddApiAction {
-        public static final String NAME = "Add API From MS Azure";
-        public static final String DESCRIPTION = "Adds API from the MS Azure developer portal.";
-        public static final String PROMPT_API_DIALOG_CAPTION = "Add API Specification from MS Azure";
-        public static final String PROMPT_API_DIALOG_DESCRIPTION = "Input developer portal URL (i.e. developer.management.azure-api.net)";
+        public static final String NAME = "Add API From Azure API Management";
+        public static final String DESCRIPTION = "Imports APIs from an Azure API Management service instance";
+        public static final String PROMPT_API_DIALOG_CAPTION = "Import APIs from Azure API Management";
+        public static final String PROMPT_API_DIALOG_DESCRIPTION = "Enter Management REST API URL (e.g. contoso.management.azure-api.net)";
     }
 
     public static final class NewProjectAction {
-        public static final String NAME = "Create Project From MS Azure";
-        public static final String DESCRIPTION = "Creates a new project from API specification on MS Azure developer portal.";
-        public static final String UNABLE_CREATE_ERROR = "Unable to create Project because of %s exception with \"%s\" message";
-        public static final String ACTION_CAPTION = "MS Azure Developer Portal (REST)";
+        public static final String NAME = "Create Project From Azure API Management";
+        public static final String DESCRIPTION = "Creates a new project for APIs imported from Azure API Management";
+        public static final String UNABLE_CREATE_ERROR = "Failed to create the project due to %s exception with \"%s\" message";
+        public static final String ACTION_CAPTION = "Azure API Management";
     }
 
     public static final class NewProjectDialog {
-        public static final String CAPTION = "Create Project From API Specification on MS Azure Portal";
-        public static final String DESCRIPTION = "Creates a new Project from API specification on MS Azure developer portal in this workspace";
+        public static final String CAPTION = "Create Project From APIs Managed by Azure API Management";
+        public static final String DESCRIPTION = "Creates a new project for APIs imported from Azure API Management in this workspace";
         public static final String PROJECT_LABEL = "Project Name";
         public static final String PROJECT_DESCRIPTION = "Name of the project";
-        public static final String URL_LABEL = "Developer Portal URL";
-        public static final String URL_DESCRIPTION = "Developer portal URL (i.e. developer.management.azure-api.net)";
-        public static final String EMPTY_PROJECT_WARNING = "Please enter project name.";
-        public static final String EMPTY_URL_WARNING = "Please enter the developer portal URL.";
-        public static final String INVALID_URL_WARNING = "Invalid developer portal URL.";
+        public static final String URL_LABEL = "Management REST API URL";
+        public static final String URL_DESCRIPTION = "Management REST API URL (e.g. contoso.management.azure-api.net)";
+        public static final String EMPTY_PROJECT_WARNING = "Please enter project name";
+        public static final String EMPTY_URL_WARNING = "Please enter the Management REST API URL";
+        public static final String INVALID_URL_WARNING = "Invalid Management REST API URL";
         public static final String CREDENTIALS_LABEL = "Credentials";
         public static final String ACCESS_TOKEN_LABEL = "Access Token";
-        public static final String ACCESS_TOKEN_DESCRIPTION = "API Management REST API Access Token";
-        public static final String EMPTY_ACCESS_TOKEN_WARNING = "Please enter Access Token.";
-        public static final String INVALID_ACCESS_TOKEN_WARNING = "Please enter valid Access Token.";
+        public static final String ACCESS_TOKEN_DESCRIPTION = "Management REST API access token";
+        public static final String EMPTY_ACCESS_TOKEN_WARNING = "Please enter access token";
+        public static final String INVALID_ACCESS_TOKEN_WARNING = "Please enter valid access token";
     }
 
     public static final class SelectApiDialog {
-        public static final String CAPTION = "Select API to Import";
-        public static final String DESCRIPTION = "Please select from the list which API specification(s) you want to import to the project.";
+        public static final String CAPTION = "Select APIs to Import";
+        public static final String DESCRIPTION = "Please select APIs you would like to import into the project from the list below";
         public static final String NAME_LABEL = "API Name";
         public static final String DESCRIPTION_LABEL = "API Description";
         public static final String DEFINITION_LABEL = "API Definition";
-        public static final String GEN_TEST_SUITE = "Generate TestSuite";
-        public static final String GEN_LOAD_TEST = "Generate LoadTest";
+        public static final String GEN_TEST_SUITE = "Generate Test Suite";
+        public static final String GEN_LOAD_TEST = "Generate Load Test";
         public static final String GEN_SECUR_TEST = "Generate Security Test";
         public static final String GEN_VIRT_HOST = "Generate Virtual Host";
-        public static final String NOTHING_SELECTED_WARNING = "Please select at least one API specification to add.";
+        public static final String NOTHING_SELECTED_WARNING = "Please select at least one API to import";
     }
 
     public static final class Executing {
-        public static final String QUERY_API_PROGRESS = "Getting APIs List...";
-        public static final String QUERY_API_ERROR = "Unable to read API list from the specified MS Azure developer portal because of the following error:\n";
-        public static final String QUERY_API_EMPTY_ERROR = "No API is accessible at the specified URL.";
+        public static final String QUERY_API_PROGRESS = "Getting APIs list...";
+        public static final String QUERY_API_ERROR = "Unable to get API list from the specified Azure API Management service instance due to the following error:\n";
+        public static final String QUERY_API_EMPTY_ERROR = "No API is accessible at the specified URL";
 
         public static final String IMPORT_PROGRESS = "Importing APIs...";
         public static final String IMPORT_ERROR = "Failed to read API description for [%s] - [%s]\n";
-        public static final String IMPORT_ERROR_TAIL = "Please contact MS Azure support for assistance";
+        public static final String IMPORT_ERROR_TAIL = "Please contact Microsoft Azure support for assistance at https://azure.microsoft.com/en-us/support";
 
-        public static final String QUERY_SUBSCRIPTIONS_PROGRESS = "Getting Subscriptions List...";
-        public static final String QUERY_SUBSCRIPTIONS_ERROR = "Unable to read Subscriptions list from the specified MS Azure developer portal because of the following error:\n";
+        public static final String QUERY_SUBSCRIPTIONS_PROGRESS = "Getting subscriptions List...";
+        public static final String QUERY_SUBSCRIPTIONS_ERROR = "Unable to get subscriptions list from the specified Azure API Management service instance due to the following error:\n";
     }
 
     public static final class AzureRestApi {
         public static final String VALUE_ENTRY_ABSENT_ERROR = "Input JSON has incorrect format: no \"value\" entry has been found.";
-        public static final String UNAVAILABLE_DATA_ERROR = "No data available at the \"%s\" location. Please contact MS Azure support for assistance.";
-        public static final String UNEXPECTED_RESPONSE_FORMAT_ERROR = "Unexpected response format of the request to the \"%s\" location. Please contact MS Azure support for assistance.";
-        public static final String INVALID_AUTHORIZATION_ERROR = "Invalid authorization";
+        public static final String UNAVAILABLE_DATA_ERROR = "No data available at the \"%s\" location. Please contact Microsoft Azure support for assistance at https://azure.microsoft.com/en-us/support";
+        public static final String UNEXPECTED_RESPONSE_FORMAT_ERROR = "Unexpected response format of the request to the \"%s\" location. Please contact Microsoft Azure support for assistance at https://azure.microsoft.com/en-us/support";
+        public static final String INVALID_AUTHORIZATION_ERROR = "Authorization";
     }
 }
