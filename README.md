@@ -1,4 +1,4 @@
-# ready-msazure-plugin 
+# Microsoft Azure API Management Plugin
 
 ===================
 
@@ -24,17 +24,17 @@ Plugin Managers' "Load from File" action.
 Usage
 -----
 
-Once installed there will have two ways to import an API from a MS Azure API Managment Service:
+Once installed there will have two ways to import an API from an Azure API Management Service:
 
-* Via the "Add API From MS Azure" option on the Project menu in the "Projects" tab
-* Via the "MS Azure Developer Portal" option in the "Create project from..." drop-down when creating a new project
+* Via the "Add API From Azure API Management" option on the Project menu in the "Projects" tab
+* Via the "Azure API Management" option in the "Create project from..." drop-down when creating a new project
 
 In both cases you will be prompted for:
-* the Base URL to a MS Azure API Management REST API, that exposes API metadata
+* the Management REST API URL to an Azure API Management REST API, that exposes API metadata
 * the Access Token to authenticate in the API Management REST API service. 
-The Base URL of the API Management REST API conforms to the template https://{servicename}.management.azure-api.net.
+The Management REST API URL conforms to the template https://{servicename}.management.azure-api.net.
 
-Once a valid Base URL and Access Token have been specified you will be presented with a list of available APIs and
+Once a valid Management REST API URL and Access Token have been specified you will be presented with a list of available APIs and
 import options. Now you can easily:
 
 * send ad-hoc requests to the API to explore its functionality
