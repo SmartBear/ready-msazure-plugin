@@ -68,7 +68,7 @@ public final class Strings {
 
         public static final String IMPORT_PROGRESS = "Importing APIs...";
         public static final String IMPORT_ERROR = "Failed to read API description for [%s] - [%s]\n";
-        public static final String IMPORT_ERROR_TAIL = "Please contact Microsoft Azure support for assistance at https://azure.microsoft.com/en-us/support";
+        public static final String IMPORT_ERROR_TAIL = "You can search and create issues for this plugin at https://github.com/SmartBear/ready-msazure-plugin/issues.";
 
         public static final String QUERY_SUBSCRIPTIONS_PROGRESS = "Getting subscriptions List...";
         public static final String QUERY_SUBSCRIPTIONS_ERROR = "Unable to get subscriptions list from the specified Azure API Management service instance due to the following error:\n";
@@ -76,8 +76,8 @@ public final class Strings {
 
     public static final class AzureRestApi {
         public static final String VALUE_ENTRY_ABSENT_ERROR = "Input JSON has incorrect format: no \"value\" entry has been found.";
-        public static final String UNAVAILABLE_DATA_ERROR = "No data available at the \"%s\" location. Please contact Microsoft Azure support for assistance at https://azure.microsoft.com/en-us/support";
-        public static final String UNEXPECTED_RESPONSE_FORMAT_ERROR = "Unexpected response format of the request to the \"%s\" location. Please contact Microsoft Azure support for assistance at https://azure.microsoft.com/en-us/support";
+        public static final String UNAVAILABLE_DATA_ERROR = "No data available at the \"%s\" location. You can search and create issues for this plugin at https://github.com/SmartBear/ready-msazure-plugin/issues.";
+        public static final String UNEXPECTED_RESPONSE_FORMAT_ERROR = "Unexpected response format of the request to the \"%s\" location. You can search and create issues for this plugin at https://github.com/SmartBear/ready-msazure-plugin/issues.";
         public static final String INVALID_AUTHORIZATION_ERROR = "Authorization";
     }
 }
