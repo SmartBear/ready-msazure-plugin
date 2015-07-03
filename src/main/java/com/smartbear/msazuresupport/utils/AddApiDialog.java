@@ -42,11 +42,12 @@ public class AddApiDialog implements AutoCloseable {
         portalUrlField.addFormFieldValidator(new XFormFieldValidator() {
             @Override
             public ValidationMessage[] validateField(XFormField formField) {
-                if (StringUtils.isNullOrEmpty(formField.getValue())) {
+                String value = getPortalUrl();
+                if (StringUtils.isNullOrEmpty(value)) {
                     return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.EMPTY_URL_WARNING, formField)};
                 }
 
-                URL portalUrl = AzureApi.stringToUrl(formField.getValue());
+                URL portalUrl = AzureApi.stringToUrl(value);
                 if (portalUrl == null) {
                     return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.INVALID_URL_WARNING, formField)};
                 }
@@ -63,7 +64,7 @@ public class AddApiDialog implements AutoCloseable {
         accessTokenField.addFormFieldValidator(new XFormFieldValidator() {
             @Override
             public ValidationMessage[] validateField(XFormField formField) {
-                if (StringUtils.isNullOrEmpty(formField.getValue())) {
+                if (StringUtils.isNullOrEmpty(getAccessToken())) {
                     return new ValidationMessage[]{new ValidationMessage(Strings.NewProjectDialog.EMPTY_ACCESS_TOKEN_WARNING, formField)};
                 }
 
@@ -79,13 +80,21 @@ public class AddApiDialog implements AutoCloseable {
 
     public Result show() {
         return dialog.show() ?
-                new Result(AzureApi.stringToUrl(portalUrlField.getValue()).toString(), accessTokenField.getValue(), loaderResult.apis) :
+                new Result(AzureApi.stringToUrl(getPortalUrl()).toString(), getAccessToken(), loaderResult.apis) :
                 null;
     }
 
+    private String getPortalUrl() {
+        return portalUrlField.getValue().trim();
+    }
+
+    private String getAccessToken() {
+        return accessTokenField.getValue().trim();
+    }
+
     private ValidationMessage[] downloadApiList() {
-        String portalUrl = portalUrlField.getValue();
-        String accessToken = accessTokenField.getValue();
+        String portalUrl = getPortalUrl();
+        String accessToken = getAccessToken();
         if (!StringUtils.isNullOrEmpty(portalUrl) && !StringUtils.isNullOrEmpty(accessToken)) {
             loaderResult = ApiListLoader.downloadList(new AzureApi.ConnectionSettings(portalUrl, accessToken));
             if (loaderResult.authorizationFailed) {
