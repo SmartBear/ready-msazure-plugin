@@ -76,6 +76,7 @@ public final class Strings {
 
     public static final class AzureRestApi {
         public static final String VALUE_ENTRY_ABSENT_ERROR = "Input JSON has incorrect format: no \"value\" entry has been found.";
+        public static final String UNAVAILABLE_HOST_ERROR = "The \"%s\" host is unavailable or invalid.";
         public static final String UNAVAILABLE_DATA_ERROR = "No data available at the \"%s\" location. You can search and create issues for this plugin at https://github.com/SmartBear/ready-msazure-plugin/issues.";
         public static final String UNEXPECTED_RESPONSE_FORMAT_ERROR = "Unexpected response format of the request to the \"%s\" location. You can search and create issues for this plugin at https://github.com/SmartBear/ready-msazure-plugin/issues.";
         public static final String INVALID_AUTHORIZATION_ERROR = "Authorization";

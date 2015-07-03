@@ -37,6 +37,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -84,7 +85,11 @@ public final class AzureApi {
         URLConnection connection = url.openConnection();
         connection.setDoInput(true);
         connection.setRequestProperty("Authorization", connectionSettings.accessToken);
-        connection.connect();
+        try {
+            connection.connect();
+        } catch (UnknownHostException e) {
+            throw new FileNotFoundException(String.format(Strings.AzureRestApi.UNAVAILABLE_HOST_ERROR, connectionSettings.Url.toString()));
+        }
 
         Reader reader;
         try {
