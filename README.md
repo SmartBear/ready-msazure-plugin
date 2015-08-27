@@ -7,7 +7,7 @@ A plugin for Ready! API that allows you to import APIs directly from a MS Azure 
 Installation
 ------------
 
-The plugin isn't enabled at the Integrated Plugin Repository yet.
+Install the plugin via the integrated Plugin Repository available via the Plugin Manager in SoapUI Pro 5.X or Ready! API 1.X
 
 
 Build it yourself
