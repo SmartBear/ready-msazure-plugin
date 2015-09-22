@@ -18,6 +18,11 @@
             <includes>
                 <include>com.smartbear:ready-msazure-plugin</include>
             </includes>
+            <unpackOptions>
+                <excludes>
+                    <exclude>com\smartbear\StandaloneLauncher*.class</exclude>
+                </excludes>
+            </unpackOptions>
         </dependencySet>
     </dependencySets> 
     <fileSets>
