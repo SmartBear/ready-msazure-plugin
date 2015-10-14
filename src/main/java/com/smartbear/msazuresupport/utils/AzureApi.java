@@ -1,16 +1,16 @@
 package com.smartbear.msazuresupport.utils;
 
 import com.eviware.soapui.SoapUI;
-import com.eviware.soapui.impl.rest.RestRequest;
 import com.eviware.soapui.impl.rest.RestResource;
 import com.eviware.soapui.impl.rest.RestService;
 import com.eviware.soapui.impl.rest.RestServiceFactory;
+import com.eviware.soapui.impl.rest.support.RestParamProperty;
+import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder;
 import com.eviware.soapui.impl.rest.support.WadlImporter;
 import com.eviware.soapui.impl.support.definition.support.ReadyApiXmlException;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.support.ModelItemNamer;
 import com.eviware.soapui.support.StringUtils;
-import com.eviware.soapui.support.types.StringToStringsMap;
 import com.eviware.soapui.support.xml.XmlUtils;
 import com.smartbear.msazuresupport.Strings;
 import com.smartbear.msazuresupport.entities.ApiInfo;
@@ -253,12 +253,11 @@ public final class AzureApi {
         project.getProperty(customPropertyName).setValue(subscription != null ? subscription.key : "");
 
         for (RestResource resource : rest.getAllOperations()) {
-            for (int i = 0; i < resource.getRequestCount(); i++) {
-                RestRequest request = resource.getRequestAt(i);
-                StringToStringsMap headers = request.getRequestHeaders();
-                headers.add("Ocp-Apim-Subscription-Key", String.format("${#Project#%s}", customPropertyName));
-                request.setRequestHeaders(headers);
-            }
+            RestParamProperty param = resource.addProperty("Ocp-Apim-Subscription-Key");
+            String keyValue = String.format("${#Project#%s}", customPropertyName);
+            param.setValue(keyValue);
+            param.setDefaultValue(keyValue);
+            param.setStyle(RestParamsPropertyHolder.ParameterStyle.HEADER);
         }
     }
 }
