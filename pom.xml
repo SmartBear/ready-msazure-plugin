@@ -5,7 +5,7 @@
     <name>Microsoft Azure API Management Plugin</name>
     <artifactId>ready-msazure-plugin</artifactId>
     <groupId>com.smartbear</groupId>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <repositories>
         <repository>
             <id>eviware</id>

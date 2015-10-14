@@ -7,7 +7,7 @@ A plugin for Ready! API that allows you to import APIs directly from a MS Azure 
 Installation
 ------------
 
-Install the plugin via the integrated Plugin Repository available via the Plugin Manager in Ready! API 1.X
+Install the plugin via the integrated Plugin Repository available via the Plugin Manager in Ready! API 1.3 and newer
 
 
 Build it yourself
@@ -43,3 +43,8 @@ import options. Now you can easily:
 * create a load tests of the API (in the LoadUI NG module)
 * create a security tests of the API (in the Secure module)
 * create a virtualized version of the API for sandboxing/simulation purposes (in the ServiceV module).
+
+Release History
+---------------
+
+* 10.2015 - Version 1.0.1, Set Ocp-Apim-Subscription-Key header to the Resource instead of the Request
