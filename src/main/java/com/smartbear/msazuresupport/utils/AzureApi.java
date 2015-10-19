@@ -238,11 +238,11 @@ public final class AzureApi {
                 .addNewInterface(ModelItemNamer.createName("Service", project.getInterfaceList()), RestServiceFactory.REST_TYPE);
         WadlImporter importer = new WadlImporter(rest);
         importer.initFromWadl(file.toURI().toURL().toString());
-        addSubscriptionKeyHeaderToAllRequests(rest, api);
+        addSubscriptionKeyHeaderToFirstLevelResources(rest, api);
         return rest;
     }
 
-    private static void addSubscriptionKeyHeaderToAllRequests(RestService rest, ApiInfo api) {
+    private static void addSubscriptionKeyHeaderToFirstLevelResources(RestService rest, ApiInfo api) {
         String customPropertyName = "subscription-key-" + api.name.replaceAll("\\s", "-");
         WsdlProject project = rest.getProject();
         if (!project.hasProperty(customPropertyName)) {
@@ -252,7 +252,7 @@ public final class AzureApi {
         Subscription subscription = api.getSubscription();
         project.getProperty(customPropertyName).setValue(subscription != null ? subscription.key : "");
 
-        for (RestResource resource : rest.getAllOperations()) {
+        for (RestResource resource : rest.getResourceList()) {
             RestParamProperty param = resource.addProperty("Ocp-Apim-Subscription-Key");
             String keyValue = String.format("${#Project#%s}", customPropertyName);
             param.setValue(keyValue);
