@@ -2,12 +2,12 @@
 
 ===================
 
-A plugin for Ready! API that allows you to import APIs directly from a MS Azure API Managment Service. 
+A plugin for ReadyAPI that allows you to import APIs directly from a MS Azure API Managment Service. 
 
 Installation
 ------------
 
-Install the plugin via the integrated Plugin Repository available via the Plugin Manager in Ready! API 1.3 and newer
+Install the plugin via the integrated Plugin Repository available via the Plugin Manager in ReadyAPI 1.3 and newer
 
 
 Build it yourself
@@ -39,9 +39,9 @@ import options. Now you can easily:
 
 * send ad-hoc requests to the API to explore its functionality
 * create functional tests of the API which you can further use to create Load Tests, Security Tests and API Monitors 
-(in the SoapUI NG module)
-* create a load tests of the API (in the LoadUI NG module)
+(in the SoapUI module)
 * create a security tests of the API (in the Secure module)
+* create a load tests of the API (in the LoadUI module)
 * create a virtualized version of the API for sandboxing/simulation purposes (in the ServiceV module).
 
 Release History
